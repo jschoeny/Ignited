@@ -114,6 +114,16 @@ extension StandardControllerSkin: ControllerSkinProtocol
         return items
     }
     
+    public func liveSkinItems(for traits: Skin.Traits, alt: Bool) -> [Skin.LiveSkinItem]?
+    {
+        return nil
+    }
+    
+    public func liveSkinImage(for item: Skin.LiveSkinItem, traits: Skin.Traits, preferredSize: Skin.Size, alt: Bool) -> UIImage?
+    {
+        return nil
+    }
+    
     public func screens(for traits: Skin.Traits, alt: Bool) -> [Skin.Screen]?
     {
         guard !self.inputMappingMode else {
