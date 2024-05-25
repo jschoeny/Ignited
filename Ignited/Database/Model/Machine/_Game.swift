@@ -21,6 +21,8 @@ public class _Game: NSManagedObject
         setPrimitiveValue(0, forKey: #keyPath(Game.overscanBottom))
         setPrimitiveValue(0, forKey: #keyPath(Game.overscanLeft))
         setPrimitiveValue(0, forKey: #keyPath(Game.overscanRight))
+        
+        setPrimitiveValue(0, forKey: #keyPath(Game.playTime))
     }
 
     // MARK: - Properties
@@ -46,6 +48,8 @@ public class _Game: NSManagedObject
     @NSManaged public var overscanLeft: UInt16
     
     @NSManaged public var overscanRight: UInt16
+    
+    @NSManaged public var playTime: UInt32
 
     // MARK: - Relationships
 

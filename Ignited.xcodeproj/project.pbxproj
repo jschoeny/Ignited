@@ -345,6 +345,7 @@
 
 /* Begin PBXFileReference section */
 		22506DA00971C4300AF90A35 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		55099B822C01981C007A2335 /* Delta 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Delta 8.xcdatamodel"; sourceTree = "<group>"; };
 		7148D8F30DCE0AE3C815E6F3 /* Pods-Ignited.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ignited.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Ignited/Pods-Ignited.debug.xcconfig"; sourceTree = "<group>"; };
 		7F8A7B5E1B1B30C00367AD4D /* libPods-Ignited.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ignited.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC0076DB2B50655400EBC46C /* AttributedHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedHeaderFooterView.swift; sourceTree = "<group>"; };
@@ -2482,6 +2483,7 @@
 		BF4828811F9027B600028B97 /* Delta.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				55099B822C01981C007A2335 /* Delta 8.xcdatamodel */,
 				AC7F1C842B535CB700A8CCBB /* Delta 7.xcdatamodel */,
 				BFDCA1E7244F7DB100B8FBDB /* Delta 6.xcdatamodel */,
 				BFE4275223EDF75300E6B417 /* Delta 5.xcdatamodel */,
@@ -2490,7 +2492,7 @@
 				BF4828821F9027B600028B97 /* Delta 2.xcdatamodel */,
 				BF4828831F9027B600028B97 /* Delta.xcdatamodel */,
 			);
-			currentVersion = AC7F1C842B535CB700A8CCBB /* Delta 7.xcdatamodel */;
+			currentVersion = 55099B822C01981C007A2335 /* Delta 8.xcdatamodel */;
 			path = Delta.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
