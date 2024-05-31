@@ -119,7 +119,7 @@ extension StandardControllerSkin: ControllerSkinProtocol
         return nil
     }
     
-    public func liveSkinImage(for item: Skin.LiveSkinItem, traits: Skin.Traits, preferredSize: Skin.Size, alt: Bool) -> UIImage?
+    public func liveSkinImage(for item: Skin.LiveSkinItem, traits: Skin.Traits, preferredSize: Skin.Size, alt: Bool, index: Int = 0) -> UIImage?
     {
         return nil
     }

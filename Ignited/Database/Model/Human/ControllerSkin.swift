@@ -101,9 +101,9 @@ extension ControllerSkin: ControllerSkinProtocol
         return self.controllerSkin?.liveSkinItems(for: traits, alt: alt)
     }
 
-    public func liveSkinImage(for item: DeltaCore.ControllerSkin.LiveSkinItem, traits: DeltaCore.ControllerSkin.Traits, preferredSize: DeltaCore.ControllerSkin.Size, alt: Bool) -> UIImage?
+    public func liveSkinImage(for item: DeltaCore.ControllerSkin.LiveSkinItem, traits: DeltaCore.ControllerSkin.Traits, preferredSize: DeltaCore.ControllerSkin.Size, alt: Bool, index: Int = 0) -> UIImage?
     {
-        return self.controllerSkin?.liveSkinImage(for: item, traits: traits, preferredSize: preferredSize, alt: alt)
+        return self.controllerSkin?.liveSkinImage(for: item, traits: traits, preferredSize: preferredSize, alt: alt, index: index)
     }
     
     public func isTranslucent(for traits: DeltaCore.ControllerSkin.Traits, alt: Bool) -> Bool?
