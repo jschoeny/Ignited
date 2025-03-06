@@ -8,9 +8,6 @@
       location = "group:../Cores/DeltaCore">
    </FileRef>
    <FileRef
-      location = "group:../Cores/GPGXDeltaCore">
-   </FileRef>
-   <FileRef
       location = "group:../Cores/mGBADeltaCore">
    </FileRef>
 </Workspace>

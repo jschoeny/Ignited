@@ -198,7 +198,6 @@
 		ACF7E31F29F75BA0000FE071 /* PHPhotoLibrary+Authorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF7E31E29F75BA0000FE071 /* PHPhotoLibrary+Authorization.swift */; };
 		ACFABEA82B4F050B00E24374 /* N64OpenGLES3Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFABEA72B4F050B00E24374 /* N64OpenGLES3Options.swift */; };
 		ACFFFB582B1BB92600273BB4 /* SustainButtonsOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFFFB572B1BB92600273BB4 /* SustainButtonsOptions.swift */; };
-		BF00BEA625B758AA00C8607D /* SystemBIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF00BEA525B758AA00C8607D /* SystemBIOS.swift */; };
 		BF02D5DA1DDEBB3000A5E131 /* openvgdb.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = BF02D5D91DDEBB3000A5E131 /* openvgdb.sqlite */; };
 		BF04E6FF1DB8625C000F35D3 /* ControllerSkinsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF04E6FE1DB8625C000F35D3 /* ControllerSkinsViewController.swift */; };
 		BF107EC41BF413F000E0C32C /* GamesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF107EC31BF413F000E0C32C /* GamesViewController.swift */; };
@@ -256,10 +255,8 @@
 		BF647A6A22FB8FCE0061D76D /* Bundle+SwizzleBundleID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF647A6922FB8FCE0061D76D /* Bundle+SwizzleBundleID.swift */; };
 		BF6866171DCAC8B900BF2D06 /* ControllerSkin+Configuring.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6866161DCAC8B900BF2D06 /* ControllerSkin+Configuring.swift */; };
 		BF696B801D9B2B02009639E0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF696B7F1D9B2B02009639E0 /* Theme.swift */; };
-		BF69FBA223E375A20051BEEA /* libVBA-M.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF69FBA123E375A20051BEEA /* libVBA-M.a */; };
 		BF69FBA823E396860051BEEA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = BF69FBA723E3967B0051BEEA /* libz.tbd */; };
 		BF69FBAA23E399AA0051BEEA /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF69FBA923E399AA0051BEEA /* CoreMotion.framework */; };
-		BF69FBC923E3A8380051BEEA /* libNestopia.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF69FBC823E3A8380051BEEA /* libNestopia.a */; };
 		BF6BF3131EB7E47F008E83CD /* ImportOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6BF3121EB7E47F008E83CD /* ImportOption.swift */; };
 		BF6BF3181EB82111008E83CD /* iTunesImportOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6BF3171EB82111008E83CD /* iTunesImportOption.swift */; };
 		BF6BF31A1EB82146008E83CD /* ClipboardImportOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6BF3191EB82146008E83CD /* ClipboardImportOption.swift */; };
@@ -300,7 +297,6 @@
 		BFE4269E1D9C68E600DC913F /* SaveStatesStoryboardSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE4269D1D9C68E600DC913F /* SaveStatesStoryboardSegue.swift */; };
 		BFE593CA21F3F8B7003412A6 /* GameSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE593C921F3F8B7003412A6 /* GameSave.swift */; };
 		BFE593CC21F3F8C2003412A6 /* _GameSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE593CB21F3F8C2003412A6 /* _GameSave.swift */; };
-		BFE9908024451E15006409A7 /* MelonDSCoreSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFE9907F24451E15006409A7 /* MelonDSCoreSettingsViewController.swift */; };
 		BFF6452E1F7CC5060056533E /* GameControllerInputMappingTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6B82A41F7CC2A300042BFB /* GameControllerInputMappingTransformer.swift */; };
 		BFFA4C091E8A24D600D87934 /* GameTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFA4C081E8A24D600D87934 /* GameTableViewCell.swift */; };
 		BFFA71DD1AAC406100EE9DD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFA71DC1AAC406100EE9DD1 /* AppDelegate.swift */; };
@@ -309,9 +305,6 @@
 		BFFC46201D59823500AF2CC6 /* InitialGamesStoryboardSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFC461D1D59823500AF2CC6 /* InitialGamesStoryboardSegue.swift */; };
 		BFFC46231D5984A000AF2CC6 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFC46221D5984A000AF2CC6 /* LaunchViewController.swift */; };
 		BFFC464C1D5998D600AF2CC6 /* CheatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFFC464B1D5998D600AF2CC6 /* CheatTableViewCell.swift */; };
-		BFFDF03723E3BB2600931B96 /* libSnes9x.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFFDF03623E3BB2600931B96 /* libSnes9x.a */; };
-		BFFDF03F23E3C28A00931B96 /* libGambatte.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFFDF03D23E3C0F000931B96 /* libGambatte.a */; };
-		BFFDF04623E3D3A600931B96 /* libMupen64Plus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFFDF04523E3D3A600931B96 /* libMupen64Plus.a */; };
 		D5011C48281B6E8B00A0760B /* CharacterSet+Filename.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5011C47281B6E8B00A0760B /* CharacterSet+Filename.swift */; };
 		D5864970297734280081477E /* CheatMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = D586496F297734280081477E /* CheatMetadata.swift */; };
 		D586497229774ABD0081477E /* CheatBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D586497129774ABD0081477E /* CheatBase.swift */; };
@@ -559,7 +552,6 @@
 		ACFFFB572B1BB92600273BB4 /* SustainButtonsOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SustainButtonsOptions.swift; sourceTree = "<group>"; };
 		B57FE4ED2A98930B00C5E989 /* CodeSigning.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CodeSigning.xcconfig; sourceTree = "<group>"; };
 		B57FE4EE2A98930B00C5E989 /* Build.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Build.xcconfig; sourceTree = "<group>"; };
-		BF00BEA525B758AA00C8607D /* SystemBIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemBIOS.swift; sourceTree = "<group>"; };
 		BF02D5D91DDEBB3000A5E131 /* openvgdb.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = openvgdb.sqlite; sourceTree = "<group>"; };
 		BF0418131D01E93400E85BCF /* GBADeltaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GBADeltaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF04E6FE1DB8625C000F35D3 /* ControllerSkinsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerSkinsViewController.swift; sourceTree = "<group>"; };
@@ -683,7 +675,6 @@
 		BFE4269D1D9C68E600DC913F /* SaveStatesStoryboardSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaveStatesStoryboardSegue.swift; sourceTree = "<group>"; };
 		BFE593C921F3F8B7003412A6 /* GameSave.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSave.swift; sourceTree = "<group>"; };
 		BFE593CB21F3F8C2003412A6 /* _GameSave.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _GameSave.swift; sourceTree = "<group>"; };
-		BFE9907F24451E15006409A7 /* MelonDSCoreSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MelonDSCoreSettingsViewController.swift; sourceTree = "<group>"; };
 		BFEC732C1AAECC4A00650035 /* Roxas.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Roxas.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFF0742B1E9DC17500ACDF4A /* GBCDeltaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GBCDeltaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFFA4C081E8A24D600D87934 /* GameTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameTableViewCell.swift; sourceTree = "<group>"; };
@@ -738,13 +729,8 @@
 			files = (
 				BF69FBA823E396860051BEEA /* libz.tbd in Frameworks */,
 				BF69FBAA23E399AA0051BEEA /* CoreMotion.framework in Frameworks */,
-				BF69FBA223E375A20051BEEA /* libVBA-M.a in Frameworks */,
-				BFFDF04623E3D3A600931B96 /* libMupen64Plus.a in Frameworks */,
 				AC720C0D29FDC0C700483B47 /* libFeatures.a in Frameworks */,
 				BFCADF1E25D22FE2008D78FB /* Systems.framework in Frameworks */,
-				BF69FBC923E3A8380051BEEA /* libNestopia.a in Frameworks */,
-				BFFDF03F23E3C28A00931B96 /* libGambatte.a in Frameworks */,
-				BFFDF03723E3BB2600931B96 /* libSnes9x.a in Frameworks */,
 				ACC4430ADE09EB6F81ADBEE3 /* libPods-Ignited.a in Frameworks */,
 				AC68690C2C00EFF10091B693 /* Previews.framework in Frameworks */,
 			);
@@ -1573,7 +1559,6 @@
 				BF5E7F431B9A650B00AE44F8 /* SettingsViewController.swift */,
 				BFB3645723245A6000CD0EB1 /* LicensesViewController.swift */,
 				AC8C213729FDAF1B0044748D /* Features */,
-				BFE9907E24451DE6006409A7 /* Cores */,
 				AC2059E62A112CA30098266B /* Quick Settings */,
 				AC7262EA2C49B9690009B577 /* Patreon */,
 				BF71CF851FE8FFF1001F1613 /* App Icon Shortcuts */,
@@ -1614,15 +1599,6 @@
 				BF6424821F5B8F3F00D6AB44 /* ListMenuViewController.swift */,
 			);
 			path = "Popover Menu";
-			sourceTree = "<group>";
-		};
-		BFE9907E24451DE6006409A7 /* Cores */ = {
-			isa = PBXGroup;
-			children = (
-				BFE9907F24451E15006409A7 /* MelonDSCoreSettingsViewController.swift */,
-				BF00BEA525B758AA00C8607D /* SystemBIOS.swift */,
-			);
-			path = Cores;
 			sourceTree = "<group>";
 		};
 		BFEC732F1AAECCBD00650035 /* Resources */ = {
@@ -1974,33 +1950,21 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Ignited/Pods-Ignited-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/DeltaCore/DeltaCore.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GBADeltaCore/GBADeltaCore.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GBCDeltaCore/GBCDeltaCore.bundle",
 				"${PODS_ROOT}/../External/Harmony/Harmony/Model/Core Data/Harmony.xcdatamodeld",
 				"${PODS_ROOT}/../External/Harmony/Harmony/Model/Core Data/Migrations/Harmony2ToHarmony3.xcmappingmodel",
 				"${PODS_ROOT}/../External/Harmony/Harmony/Model/Core Data/Migrations/HarmonyToHarmony2.xcmappingmodel",
-				"${PODS_CONFIGURATION_BUILD_DIR}/MelonDSDeltaCore/melonDS.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/N64DeltaCore/Mupen64Plus.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/NESDeltaCore/NESDeltaCore.bundle",
 				"${PODS_ROOT}/../External/Roxas/Roxas/RSTCollectionViewCell.xib",
 				"${PODS_ROOT}/../External/Roxas/Roxas/RSTPlaceholderView.xib",
-				"${PODS_CONFIGURATION_BUILD_DIR}/SNESDeltaCore/SNESDeltaCore.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ZIPFoundation/ZIPFoundation_Privacy.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/DeltaCore.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GBADeltaCore.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GBCDeltaCore.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Harmony.momd",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Harmony2ToHarmony3.cdm",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/HarmonyToHarmony2.cdm",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/melonDS.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Mupen64Plus.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/NESDeltaCore.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RSTCollectionViewCell.nib",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RSTPlaceholderView.nib",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SNESDeltaCore.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ZIPFoundation_Privacy.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2318,7 +2282,6 @@
 				BF99A5971DC2F9C400468E9E /* ControllerSkinTableViewCell.swift in Sources */,
 				ACB3CB8C29FDCF4D002B53DE /* ToastNotificationOptions.swift in Sources */,
 				ACB3CB9329FDD601002B53DE /* TouchFeedbackVibrationOptions.swift in Sources */,
-				BFE9908024451E15006409A7 /* MelonDSCoreSettingsViewController.swift in Sources */,
 				BF5942861E09BC8B0051894B /* _Cheat.swift in Sources */,
 				BF5E7F441B9A650B00AE44F8 /* SettingsViewController.swift in Sources */,
 				BF8CA9361F5F651900499FDD /* PopoverMenuController.swift in Sources */,
@@ -2327,7 +2290,6 @@
 				BF6BF3271EB87EB8008E83CD /* PhotoLibraryImportOption.swift in Sources */,
 				BF5942661E09BBB10051894B /* LoadImageURLOperation.swift in Sources */,
 				BF353FF21C5D7FB000C1184C /* PauseViewController.swift in Sources */,
-				BF00BEA625B758AA00C8607D /* SystemBIOS.swift in Sources */,
 				BF696B801D9B2B02009639E0 /* Theme.swift in Sources */,
 				BF7AE8081C2E858400B1B5BC /* GridMenuViewController.swift in Sources */,
 				ACED6C2E2B9262EB0080BFD3 /* CGRect+RelativeAndAbsolute.swift in Sources */,
@@ -2759,18 +2721,12 @@
 				OTHER_LDFLAGS = (
 					"-ld_classic",
 					"-ObjC",
-					"-l\"GBADeltaCore\"",
-					"-l\"GBCDeltaCore\"",
 					"-l\"ZIPFoundation\"",
 					"-l\"SwiftyDropbox\"",
 					"-l\"SQLite.swift\"",
-					"-l\"SNESDeltaCore\"",
 					"-l\"SMCalloutView\"",
 					"-l\"SDWebImage\"",
 					"-l\"Roxas\"",
-					"-l\"NESDeltaCore\"",
-					"-l\"N64DeltaCore\"",
-					"-l\"MelonDSDeltaCore\"",
 					"-l\"Harmony\"",
 					"-l\"KeychainAccess\"",
 					"-l\"Alamofire\"",
@@ -2783,7 +2739,7 @@
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = BETA;
-				SWIFT_INCLUDE_PATHS = "$(inherited) \"$(SRCROOT)/Cores/GPGXDeltaCore/Sources/GPGXBridge\" \"$(SRCROOT)/Cores/mGBADeltaCore/Sources/mGBABridge\"";
+				SWIFT_INCLUDE_PATHS = "$(inherited) \"$(SRCROOT)/Cores/mGBADeltaCore/Sources/mGBABridge\"";
 				SWIFT_OBJC_BRIDGING_HEADER = "Ignited/Supporting Files/Ignited-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -2815,18 +2771,12 @@
 				OTHER_LDFLAGS = (
 					"-ld_classic",
 					"-ObjC",
-					"-l\"GBADeltaCore\"",
-					"-l\"GBCDeltaCore\"",
 					"-l\"ZIPFoundation\"",
 					"-l\"SwiftyDropbox\"",
 					"-l\"SQLite.swift\"",
-					"-l\"SNESDeltaCore\"",
 					"-l\"SMCalloutView\"",
 					"-l\"SDWebImage\"",
 					"-l\"Roxas\"",
-					"-l\"NESDeltaCore\"",
-					"-l\"N64DeltaCore\"",
-					"-l\"MelonDSDeltaCore\"",
 					"-l\"Harmony\"",
 					"-l\"KeychainAccess\"",
 					"-l\"Alamofire\"",
@@ -2838,7 +2788,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
-				SWIFT_INCLUDE_PATHS = "$(inherited) \"$(SRCROOT)/Cores/GPGXDeltaCore/Sources/GPGXBridge\" \"$(SRCROOT)/Cores/mGBADeltaCore/Sources/mGBABridge\"";
+				SWIFT_INCLUDE_PATHS = "$(inherited) \"$(SRCROOT)/Cores/mGBADeltaCore/Sources/mGBABridge\"";
 				SWIFT_OBJC_BRIDGING_HEADER = "Ignited/Supporting Files/Ignited-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;

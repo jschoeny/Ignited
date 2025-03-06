@@ -27,38 +27,18 @@ struct AirPlaySkinsOptions
     @Option(name: "Manage Skins", detailView: { _ in SkinManager() })
     private var skinManager: String = "" // Hack until I figure out how to support Void properties...
      
-    @Option(name: LocalizedStringKey(System.nes.localizedName), description: "The controller skin used when AirPlaying NES games.", detailView: { SkinPicker(gameType: .nes, controllerSkinID: $0) })
-    var nes: String?
-
-    @Option(name: LocalizedStringKey(System.snes.localizedName), description: "The controller skin used when AirPlaying SNES games.", detailView: { SkinPicker(gameType: .snes, controllerSkinID: $0) })
-    var snes: String?
-
-    @Option(name: LocalizedStringKey(System.genesis.localizedName), description: "The controller skin used when AirPlaying Genesis games.", detailView: { SkinPicker(gameType: .genesis, controllerSkinID: $0) })
-    var genesis: String?
-
-    @Option(name: LocalizedStringKey(System.n64.localizedName), description: "The controller skin used when AirPlaying N64 games.", detailView: { SkinPicker(gameType: .n64, controllerSkinID: $0) })
-    var n64: String?
-
     @Option(name: LocalizedStringKey(System.gbc.localizedName), description: "The controller skin used when AirPlaying GBC games.", detailView: { SkinPicker(gameType: .gbc, controllerSkinID: $0) })
     var gbc: String?
 
     @Option(name: LocalizedStringKey(System.gba.localizedName), description: "The controller skin used when AirPlaying GBA games.", detailView: { SkinPicker(gameType: .gba, controllerSkinID: $0) })
     var gba: String?
 
-    @Option(name: LocalizedStringKey(System.ds.localizedName), description: "The controller skin used when AirPlaying DS games.", detailView: { SkinPicker(gameType: .ds, controllerSkinID: $0) })
-    var ds: String?
-
     subscript(gameType: GameType) -> String? {
         guard let system = System(gameType: gameType) else { return nil }
         switch system
         {
-        case .nes: return self.nes
-        case .snes: return self.snes
-        case .n64: return self.n64
         case .gbc: return self.gbc
         case .gba: return self.gba
-        case .ds: return self.ds
-        case .genesis, .ms, .gg: return self.genesis
         }
     }
 }

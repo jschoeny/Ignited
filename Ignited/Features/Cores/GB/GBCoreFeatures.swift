@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-import GBCDeltaCore
 import mGBADeltaCore
 
 import Features
@@ -59,53 +58,53 @@ struct GBCoreOptions
     })
     var coreInfo: String = ""
     
-    @Option(name: "Change Core",
-            description: "Choose the core to use for GBC games.",
-            detailView: { value in
-        HStack {
-            Spacer()
-            Button("Choose Core") {
-                GBCoreOptions.changeCore()
-            }
-            .foregroundColor(.red)
-            Spacer()
-        }
-        .displayInline()
-    })
-    var coreName: String = Settings.preferredCore(for: .gbc)?.metadata?.name.value ?? mGBC.core.name
+//    @Option(name: "Change Core",
+//            description: "Choose the core to use for GBC games.",
+//            detailView: { value in
+//        HStack {
+//            Spacer()
+//            Button("Choose Core") {
+//                GBCoreOptions.changeCore()
+//            }
+//            .foregroundColor(.red)
+//            Spacer()
+//        }
+//        .displayInline()
+//    })
+//    var coreName: String = Settings.preferredCore(for: .gbc)?.metadata?.name.value ?? mGBC.core.name
 }
 
-extension GBCoreOptions
-{
-    static func changeCore()
-    {
-        guard let topViewController = UIApplication.shared.topViewController() else { return }
-        
-        let alertController = UIAlertController(title: NSLocalizedString("Change Emulator Core", comment: ""), message: NSLocalizedString("Save states are not compatible between different emulator cores. Make sure to use in-game saves in order to keep using your save data.\n\nYour existing save states will not be deleted and will be available whenever you switch cores again.", comment: ""), preferredStyle: .actionSheet)
-        alertController.preparePopoverPresentationController(topViewController.view)
-        
-        var gambatteActionTitle = GBC.core.metadata?.name.value ?? GBC.core.name
-        var mgbcActionTitle = mGBC.core.metadata?.name.value ?? mGBC.core.name
-        
-        if Settings.preferredCore(for: .gbc) == GBC.core
-        {
-            gambatteActionTitle += " ✓"
-        }
-        else
-        {
-            mgbcActionTitle += " ✓"
-        }
-        
-        alertController.addAction(UIAlertAction(title: gambatteActionTitle, style: .default, handler: { (action) in
-            Settings.setPreferredCore(GBC.core, for: .gbc)
-            Settings.gbFeatures.core.coreName = GBC.core.metadata?.name.value ?? GBC.core.name
-        }))
-        
-        alertController.addAction(UIAlertAction(title: mgbcActionTitle, style: .default, handler: { (action) in
-            Settings.setPreferredCore(mGBC.core, for: .gbc)
-            Settings.gbFeatures.core.coreName = mGBC.core.metadata?.name.value ?? mGBC.core.name
-        }))
-        alertController.addAction(.cancel)
-        topViewController.present(alertController, animated: true, completion: nil)
-    }
-}
+//extension GBCoreOptions
+//{
+//    static func changeCore()
+//    {
+//        guard let topViewController = UIApplication.shared.topViewController() else { return }
+//        
+//        let alertController = UIAlertController(title: NSLocalizedString("Change Emulator Core", comment: ""), message: NSLocalizedString("Save states are not compatible between different emulator cores. Make sure to use in-game saves in order to keep using your save data.\n\nYour existing save states will not be deleted and will be available whenever you switch cores again.", comment: ""), preferredStyle: .actionSheet)
+//        alertController.preparePopoverPresentationController(topViewController.view)
+//        
+//        var gambatteActionTitle = GBC.core.metadata?.name.value ?? GBC.core.name
+//        var mgbcActionTitle = mGBC.core.metadata?.name.value ?? mGBC.core.name
+//        
+//        if Settings.preferredCore(for: .gbc) == GBC.core
+//        {
+//            gambatteActionTitle += " ✓"
+//        }
+//        else
+//        {
+//            mgbcActionTitle += " ✓"
+//        }
+//        
+//        alertController.addAction(UIAlertAction(title: gambatteActionTitle, style: .default, handler: { (action) in
+//            Settings.setPreferredCore(GBC.core, for: .gbc)
+//            Settings.gbFeatures.core.coreName = GBC.core.metadata?.name.value ?? GBC.core.name
+//        }))
+//        
+//        alertController.addAction(UIAlertAction(title: mgbcActionTitle, style: .default, handler: { (action) in
+//            Settings.setPreferredCore(mGBC.core, for: .gbc)
+//            Settings.gbFeatures.core.coreName = mGBC.core.metadata?.name.value ?? mGBC.core.name
+//        }))
+//        alertController.addAction(.cancel)
+//        topViewController.present(alertController, animated: true, completion: nil)
+//    }
+//}

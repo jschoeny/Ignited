@@ -10,7 +10,6 @@ import Foundation
 
 import DeltaCore
 import Features
-import MelonDSDeltaCore
 import mGBADeltaCore
 
 import Roxas
@@ -69,7 +68,6 @@ struct Settings
             #keyPath(UserDefaults.legacyDatabaseHasBeenRepaired): false,
             #keyPath(UserDefaults.gameShortcutsMode): GameShortcutsMode.recent.rawValue,
             #keyPath(UserDefaults.sortSaveStatesByOldestFirst): false,
-            Settings.preferredCoreSettingsKey(for: .ds): MelonDS.core.identifier,
             Settings.preferredCoreSettingsKey(for: .gba): mGBA.core.identifier,
             Settings.preferredCoreSettingsKey(for: .gbc): mGBC.core.identifier,
             Settings.gameplayFeatures.saveStates.settingsKey.rawValue: true,
@@ -416,15 +414,8 @@ private extension Settings
         
         switch system
         {
-        case .nes: systemName = "nes"
-        case .snes: systemName = "snes"
         case .gbc: systemName = "gbc"
         case .gba: systemName = "gba"
-        case .n64: systemName = "n64"
-        case .ds: systemName = "ds"
-        case .genesis: systemName = "genesis"
-        case .ms: systemName = "ms"
-        case .gg: systemName = "gg"
         }
         
         let orientation: String

@@ -350,15 +350,8 @@ extension System
 {
     var size: CGSize {
         switch self {
-        case .genesis: return CGSize(width: 74, height: 100)
-        case .ms: return CGSize(width: 74, height: 100)
-        case .gg: return CGSize(width: 72, height: 100)
-        case .nes: return CGSize(width: 73, height: 100)
-        case .snes: return CGSize(width: 100, height: 73)
-        case .n64: return CGSize(width: 100, height: 70)
         case .gbc: return CGSize(width: 100, height: 98)
         case .gba: return CGSize(width: 100, height: 100)
-        case .ds: return CGSize(width: 100, height: 90)
         }
     }
     

@@ -8,13 +8,6 @@
 
 import DeltaCore
 
-import NESDeltaCore
-import SNESDeltaCore
-import GBCDeltaCore
-import GBADeltaCore
-import N64DeltaCore
-import MelonDSDeltaCore
-
 import Systems
 
 @dynamicMemberLookup
@@ -80,26 +73,11 @@ extension DeltaCoreProtocol
     var metadata: DeltaCoreMetadata? {
         switch self
         {
-        case MelonDS.core:
-            return DeltaCoreMetadata([.name: .init(value: NSLocalizedString("melonDS", comment: ""), url: URL(string: "http://melonds.kuribo64.net")),
-                                      .developer: .init(value: NSLocalizedString("Arisotura", comment: ""), url: URL(string: "https://twitter.com/Arisotura")),
-                                      .source: .init(value: NSLocalizedString("GitHub", comment: ""), url: URL(string: "https://github.com/Arisotura/melonDS")),
-                                      .donate: .init(value: NSLocalizedString("Patreon", comment: ""), url: URL(string: "https://www.patreon.com/staplebutter"))])
-            
-        case GBA.core:
-            return DeltaCoreMetadata([.name: .init(value: NSLocalizedString("VBA-M (Legacy)", comment: ""), url: URL(string: "https://visualboyadvance.org")),
-                                      .source: .init(value: NSLocalizedString("GitHub", comment: ""), url: URL(string: "https://github.com/visualboyadvance-m/visualboyadvance-m"))])
-            
         case mGBA.core:
             return DeltaCoreMetadata([.name: .init(value: NSLocalizedString("mGBA", comment: ""), url: URL(string: "https://mgba.io")),
                                       .developer: .init(value: NSLocalizedString("endrift", comment: ""), url: URL(string: "http://endrift.com")),
                                       .source: .init(value: NSLocalizedString("GitHub", comment: ""), url: URL(string: "https://github.com/mgba-emu/mgba")),
                                       .donate: .init(value: NSLocalizedString("Patreon", comment: ""), url: URL(string: "https://www.patreon.com/mgba"))])
-            
-        case GBC.core:
-            return DeltaCoreMetadata([.name: .init(value: NSLocalizedString("Gambatte", comment: ""), url: URL(string: "https://sourceforge.net/projects/gambatte/")),
-                                      .developer: .init(value: NSLocalizedString("sinamas", comment: ""), url: URL(string: "https://sourceforge.net/u/sinamas/profile/")),
-                                      .source: .init(value: NSLocalizedString("GitHub", comment: ""), url: URL(string: "https://github.com/libretro/gambatte-libretro"))])
             
         case mGBC.core:
             return DeltaCoreMetadata([.name: .init(value: NSLocalizedString("mGBA", comment: ""), url: URL(string: "https://mgba.io")),

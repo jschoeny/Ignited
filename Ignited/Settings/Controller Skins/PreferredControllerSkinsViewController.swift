@@ -184,12 +184,12 @@ private extension PreferredControllerSkinsViewController
         
         if portraitControllerSkin == nil
         {
-            portraitControllerSkin = self.system != nil ? Settings.preferredControllerSkin(for: self.system, traits: portraitTraits) : Settings.preferredControllerSkin(for: System.nes, traits: portraitTraits)
+            portraitControllerSkin = self.system != nil ? Settings.preferredControllerSkin(for: self.system, traits: portraitTraits) : Settings.preferredControllerSkin(for: System.gba, traits: portraitTraits)
         }
         
         if landscapeControllerSkin == nil
         {
-            landscapeControllerSkin = self.system != nil ? Settings.preferredControllerSkin(for: self.system, traits: landscapeTraits) : Settings.preferredControllerSkin(for: System.nes, traits: landscapeTraits)
+            landscapeControllerSkin = self.system != nil ? Settings.preferredControllerSkin(for: self.system, traits: landscapeTraits) : Settings.preferredControllerSkin(for: System.gba, traits: landscapeTraits)
         }
         
         if portraitControllerSkin != self.portraitControllerSkin

@@ -55,7 +55,6 @@ private extension SettingsViewController
     {
         case gbc
         case gba
-        case ds
     }
     
     enum SkinDownloadsRow: Int, CaseIterable
@@ -418,10 +417,6 @@ extension SettingsViewController
                 let preferredCore = Settings.preferredCore(for: .gba)
                 cell.detailTextLabel?.text = preferredCore?.metadata?.name.value ?? preferredCore?.name ?? NSLocalizedString("Unknown", comment: "")
                 
-            case .ds:
-                let preferredCore = Settings.preferredCore(for: .ds)
-                cell.detailTextLabel?.text = preferredCore?.metadata?.name.value ?? preferredCore?.name ?? NSLocalizedString("Unknown", comment: "")
-                
             default: break
             }
             
@@ -458,7 +453,6 @@ extension SettingsViewController
             {
             case .gbc: self.showFeatures(featureGroup: .gbc)
             case .gba: self.showFeatures(featureGroup: .gba)
-            case .ds: self.performSegue(withIdentifier: Segue.dsSettings.rawValue, sender: cell)
             }
             
         case .patreon:

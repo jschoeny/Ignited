@@ -22,9 +22,7 @@ public struct StandardControllerSkin
     
     public var inputMappingMode: Bool
     public var isDebugModeEnabled: Bool { false }
-    public var hasAltRepresentations: Bool {
-        return self.gameType == .ds
-    }
+    public var hasAltRepresentations: Bool { false }
     
     public init?(for gameType: GameType, inputMappingMode: Bool = false)
     {
@@ -72,8 +70,7 @@ extension StandardControllerSkin: ControllerSkinProtocol
             default:
                 var kind = input.kind
                 
-                if self.gameType != .n64,
-                   kind == .dPad
+                if kind == .dPad
                 {
                     switch Settings.standardSkinFeatures.inputsAndLayout.directionalInputType
                     {
@@ -122,10 +119,6 @@ extension StandardControllerSkin: ControllerSkinProtocol
             return [Skin.Screen(id: "standardControllerSkin.screen", outputFrame: screenFrame, style: self.screenStyle().style)]
         }
         
-        guard !(self.gameType == .ds && Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless) else {
-            return self.dsButtonlessScreens(for: traits, alt: alt)
-        }
-        
         let buttonAreas = self.buttonAreas(for: traits)
         
         var leftButtonArea = buttonAreas.left.getAbsolute(for: traits, inputMappingMode: self.inputMappingMode)
@@ -133,7 +126,7 @@ extension StandardControllerSkin: ControllerSkinProtocol
         
         switch self.gameType
         {
-        case .gbc, .nes, .genesis, .ms, .gg:
+        case .gbc:
             if !self.customButtonsEnabled()
             {
                 leftButtonArea = leftButtonArea.getSubRect(sections: 4, index: 2, size: 3)
@@ -183,81 +176,33 @@ extension StandardControllerSkin: ControllerSkinProtocol
             screenArea = screenArea.insetBy(dx: 10, dy: 10)
         }
         
-        switch self.gameType
+        var screenFrame: CGRect
+        
+        if Settings.standardSkinFeatures.gameScreen.landscapeSize == .fillDevice,
+           traits.orientation == .landscape
         {
-        case .ds:
-            let aspectRatio = CGSize(width: self.screenSize().width, height: self.screenSize().height / 2)
-            let topScreenInputFrame = CGRect(origin: .zero, size: aspectRatio)
-            let bottomScreenInputFrame = CGRect(origin: CGPoint(x: 0, y: aspectRatio.height), size: aspectRatio)
+            let unsafeArea = self.unsafeArea(for: traits, alt: alt) ?? 0
             
-            let topScreenHeight = screenArea.height * Settings.standardSkinFeatures.gameScreen.dsTopScreenSize
-            var topScreenArea = CGRect(x: screenArea.minX, y: screenArea.minY, width: screenArea.width, height: topScreenHeight)
+            screenFrame = CGRect(x: screenArea.minX + unsafeArea, y: screenArea.minY,
+                                 width: screenArea.width - (unsafeArea * 2), height: screenArea.height)
+        }
+        else
+        {
+            screenFrame = AVMakeRect(aspectRatio: self.screenSize(), insideRect: screenArea)
+        }
+        
+        screenFrame = screenFrame.getRelative(for: traits, inputMappingMode: self.inputMappingMode)
+        
+        switch (traits.device, traits.displayType)
+        {
+        case (_, .splitView):
+            return [Skin.Screen(id: "standardControllerSkin.screen", placement: .app, style: self.screenStyle().style)]
             
-            let bottomScreenHeight = screenArea.height - topScreenHeight
-            var bottomScreenArea = CGRect(x: screenArea.minX, y: screenArea.minY + topScreenHeight, width: screenArea.width, height: bottomScreenHeight)
-            
-            if self.screenStyle().isFloating
-            {
-                topScreenArea = topScreenArea.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0))
-                bottomScreenArea = bottomScreenArea.inset(by: UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0))
-            }
-            
-            let topScreenFrame = AVMakeRect(aspectRatio: aspectRatio, insideRect: topScreenArea).getRelative(for: traits, inputMappingMode: self.inputMappingMode)
-            let bottomScreenFrame = AVMakeRect(aspectRatio: aspectRatio, insideRect: bottomScreenArea).getRelative(for: traits, inputMappingMode: self.inputMappingMode)
-            
-            let bottomScreenSplitViewFrame = AVMakeRect(aspectRatio: aspectRatio, insideRect: screenArea).getRelative(for: traits, inputMappingMode: self.inputMappingMode)
-            
-            switch (traits.displayType, alt)
-            {
-            case (.splitView, _):
-                return [
-                    Skin.Screen(id: "standardControllerSkin.topScreen", inputFrame: topScreenInputFrame, placement: .app, style: self.screenStyle().style),
-                    Skin.Screen(id: "standardControllerSkin.bottomScreen", inputFrame: bottomScreenInputFrame, outputFrame: bottomScreenSplitViewFrame, isTouchScreen: true, style: self.screenStyle().style)
-                ]
-                
-            case (_, false):
-                return [
-                    Skin.Screen(id: "standardControllerSkin.topScreen", inputFrame: topScreenInputFrame, outputFrame: topScreenFrame, style: self.screenStyle().style),
-                    Skin.Screen(id: "standardControllerSkin.bottomScreen", inputFrame: bottomScreenInputFrame, outputFrame: bottomScreenFrame, isTouchScreen: true, style: self.screenStyle().style)
-                ]
-                
-            case (_, true):
-                return [
-                    Skin.Screen(id: "standardControllerSkin.topScreen", inputFrame: topScreenInputFrame, outputFrame: bottomScreenFrame, style: self.screenStyle().style),
-                    Skin.Screen(id: "standardControllerSkin.bottomScreen", inputFrame: bottomScreenInputFrame, outputFrame: topScreenFrame, isTouchScreen: true, style: self.screenStyle().style)
-                ]
-                
-            }
+        case (.tv, _):
+            return nil
             
         default:
-            var screenFrame: CGRect
-            
-            if Settings.standardSkinFeatures.gameScreen.landscapeSize == .fillDevice,
-               traits.orientation == .landscape
-            {
-                let unsafeArea = self.unsafeArea(for: traits, alt: alt) ?? 0
-                
-                screenFrame = CGRect(x: screenArea.minX + unsafeArea, y: screenArea.minY,
-                                     width: screenArea.width - (unsafeArea * 2), height: screenArea.height)
-            }
-            else
-            {
-                screenFrame = AVMakeRect(aspectRatio: self.screenSize(), insideRect: screenArea)
-            }
-            
-            screenFrame = screenFrame.getRelative(for: traits, inputMappingMode: self.inputMappingMode)
-            
-            switch (traits.device, traits.displayType)
-            {
-            case (_, .splitView):
-                return [Skin.Screen(id: "standardControllerSkin.screen", placement: .app, style: self.screenStyle().style)]
-                
-            case (.tv, _):
-                return nil
-                
-            default:
-                return [Skin.Screen(id: "standardControllerSkin.screen", outputFrame: screenFrame, style: self.screenStyle().style)]
-            }
+            return [Skin.Screen(id: "standardControllerSkin.screen", outputFrame: screenFrame, style: self.screenStyle().style)]
         }
     }
     
@@ -354,8 +299,7 @@ extension StandardControllerSkin: ControllerSkinProtocol
                 var color = Settings.standardSkinFeatures.styleAndColor.color.uiColor
                 var colorSecondary = Settings.standardSkinFeatures.styleAndColor.color.uiColorSecondary
                 
-                if self.gameType != .n64,
-                   input.kind == .dPad,
+                if input.kind == .dPad,
                    Settings.standardSkinFeatures.inputsAndLayout.directionalInputType == .thumbstick
                 {
                     assetName = SoftwareInput.thumbstick.assetName(self.gameType)
@@ -534,60 +478,28 @@ extension StandardControllerSkin
         switch (traits.device, traits.displayType, traits.orientation)
         {
         case (.iphone, .standard, .portrait):
-            if self.gameType == .n64
-            {
-                buttonAreas.left =  CGRect(x: 0.02, y: 0.4, width: 0.46, height: 0.58)
-                buttonAreas.right = CGRect(x: 0.52, y: 0.4, width: 0.46, height: 0.58)
-            }
-            else
-            {
-                buttonAreas.left =  CGRect(x: 0.02, y: 0.53, width: 0.46, height: 0.45)
-                buttonAreas.right = CGRect(x: 0.52, y: 0.53, width: 0.46, height: 0.45)
-            }
+            buttonAreas.left =  CGRect(x: 0.02, y: 0.53, width: 0.46, height: 0.45)
+            buttonAreas.right = CGRect(x: 0.52, y: 0.53, width: 0.46, height: 0.45)
             
         case (.iphone, .standard, .landscape):
             buttonAreas.left =  CGRect(x: 0.02, y: 0.02, width: 0.23, height: 0.96)
             buttonAreas.right = CGRect(x: 0.75, y: 0.02, width: 0.23, height: 0.96)
             
         case (.iphone, .edgeToEdge, .portrait):
-            if self.gameType == .n64
-            {
-                buttonAreas.left =  CGRect(x: 0.02, y: 0.4, width: 0.46, height: 0.55)
-                buttonAreas.right = CGRect(x: 0.52, y: 0.4, width: 0.46, height: 0.55)
-            }
-            else
-            {
-                buttonAreas.left =  CGRect(x: 0.02, y: 0.53, width: 0.46, height: 0.42)
-                buttonAreas.right = CGRect(x: 0.52, y: 0.53, width: 0.46, height: 0.42)
-            }
+            buttonAreas.left =  CGRect(x: 0.02, y: 0.53, width: 0.46, height: 0.42)
+            buttonAreas.right = CGRect(x: 0.52, y: 0.53, width: 0.46, height: 0.42)
             
         case (.iphone, .edgeToEdge, .landscape):
             buttonAreas.left =  CGRect(x: 0.05, y: 0.02, width: 0.2, height: 0.96)
             buttonAreas.right = CGRect(x: 0.75, y: 0.02, width: 0.2, height: 0.96)
             
         case (.ipad, .standard, .portrait):
-            if self.gameType == .n64
-            {
-                buttonAreas.left =  CGRect(x: 0.05, y: 0.55, width: 0.28, height: 0.43)
-                buttonAreas.right = CGRect(x: 0.67, y: 0.55, width: 0.28, height: 0.43)
-            }
-            else
-            {
-                buttonAreas.left =  CGRect(x: 0.05, y: 0.6, width: 0.28, height: 0.35)
-                buttonAreas.right = CGRect(x: 0.67, y: 0.6, width: 0.28, height: 0.35)
-            }
+            buttonAreas.left =  CGRect(x: 0.05, y: 0.6, width: 0.28, height: 0.35)
+            buttonAreas.right = CGRect(x: 0.67, y: 0.6, width: 0.28, height: 0.35)
             
         case (.ipad, .standard, .landscape):
-            if self.gameType == .n64
-            {
-                buttonAreas.left =  CGRect(x: 0.03, y: 0.35, width: 0.2, height: 0.63)
-                buttonAreas.right = CGRect(x: 0.77, y: 0.35, width: 0.2, height: 0.63)
-            }
-            else
-            {
-                buttonAreas.left =  CGRect(x: 0.03, y: 0.4, width: 0.2, height: 0.55)
-                buttonAreas.right = CGRect(x: 0.77, y: 0.4, width: 0.2, height: 0.55)
-            }
+            buttonAreas.left =  CGRect(x: 0.03, y: 0.4, width: 0.2, height: 0.55)
+            buttonAreas.right = CGRect(x: 0.77, y: 0.4, width: 0.2, height: 0.55)
             
         case (.ipad, .splitView, .portrait):
             buttonAreas.left =  CGRect(x: 0.02, y: 0.02, width: 0.25, height: 0.96)
@@ -600,42 +512,6 @@ extension StandardControllerSkin
         default: break
         }
         
-        if self.gameType == .ds
-        {
-            switch (Settings.standardSkinFeatures.inputsAndLayout.dsLayout, traits.device, traits.displayType, traits.orientation)
-            {
-            case (.compact, .iphone, .standard, .portrait):
-                buttonAreas.left = buttonAreas.left.getSubRect(sections: 4, index: 2, size: 3)
-                buttonAreas.right = buttonAreas.right.getSubRect(sections: 4, index: 2, size: 3)
-                
-            case (.compact, .iphone, .edgeToEdge, .portrait):
-                buttonAreas.left = buttonAreas.left.getSubRect(sections: 4, index: 2, size: 3)
-                buttonAreas.right = buttonAreas.right.getSubRect(sections: 4, index: 2, size: 3)
-                
-                if traits.displayType == .edgeToEdge
-                {
-                    buttonAreas.left = buttonAreas.left.offsetBy(dx: 0, dy: 0.03)
-                    buttonAreas.right = buttonAreas.right.offsetBy(dx: 0, dy: 0.03)
-                }
-                
-            case (.buttonless, _, .splitView, _): break
-                
-            case (.buttonless, _, _, _):
-                switch traits.orientation
-                {
-                case .portrait:
-                    buttonAreas.left =  CGRect(x: 0.03, y: 0.47, width: 0.44, height: 0.06)
-                    buttonAreas.right = CGRect(x: 0.53, y: 0.47, width: 0.44, height: 0.06)
-                    
-                case .landscape:
-                    buttonAreas.left =  CGRect(x: 0.47, y: 0.03, width: 0.06, height: 0.44)
-                    buttonAreas.right = CGRect(x: 0.47, y: 0.53, width: 0.06, height: 0.44)
-                }
-                
-            default: break
-            }
-        }
-        
         return (buttonAreas.left, buttonAreas.right)
     }
     
@@ -646,12 +522,7 @@ extension StandardControllerSkin
         switch self.gameType
         {
         case .gba: inputs = [.dPad, .a, .b, .l, .r, .start, .select, .menu]
-        case .gbc, .nes: inputs = [.dPad, .a, .b, .start, .select, .menu]
-        case .snes: inputs = [.dPad, .a, .b, .x, .y, .l, .r, .start, .select, .menu]
-        case .ds: inputs = [.dPad, .a, .b, .x, .y, .l, .r, .start, .select, .touchScreen, .menu]
-        case .n64: inputs = [.dPad, .thumbstick, .cUp, .cDown, .cLeft, .cRight, .a, .b, .l, .r, .z, .start, .menu]
-        case .genesis: inputs = [.dPad, .a, .b, .c, .x, .y, .z, .start, .mode, .menu]
-        case .ms, .gg: inputs = [.dPad, .b, .c, .start, .menu]
+        case .gbc: inputs = [.dPad, .a, .b, .start, .select, .menu]
         default: break
         }
         
@@ -659,31 +530,15 @@ extension StandardControllerSkin
             return inputs
         }
         
-        if self.gameType == .genesis,
-           Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout == .button3
-        {
-            inputs = [.dPad, .a, .b, .c, .start, .mode, .menu]
-        }
-        
-        if self.gameType == .ds,
-           Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless,
-           traits.displayType != .splitView
-        {
-            inputs = [.start, .select, .touchScreen, .menu]
-        }
-        
         inputs.append(.quickSettings)
         
-        if self.gameType != .n64
+        if Settings.standardSkinFeatures.inputsAndLayout.customButton1 != .null
         {
-            if Settings.standardSkinFeatures.inputsAndLayout.customButton1 != .null
-            {
-                inputs.append(.custom1)
-            }
-            if Settings.standardSkinFeatures.inputsAndLayout.customButton2 != .null
-            {
-                inputs.append(.custom2)
-            }
+            inputs.append(.custom1)
+        }
+        if Settings.standardSkinFeatures.inputsAndLayout.customButton2 != .null
+        {
+            inputs.append(.custom2)
         }
         
         return inputs
@@ -712,7 +567,7 @@ extension StandardControllerSkin
     
     public func hasTouchScreen(for traits: Skin.Traits) -> Bool
     {
-        return self.gameType == .ds
+        return false
     }
     
     public func customButtonsEnabled() -> Bool
@@ -763,21 +618,14 @@ public enum SoftwareInput: String, CaseIterable
             }
             
         case .custom2:
-            if Settings.standardSkinFeatures.inputsAndLayout.dsScreenSwap, gameType == .ds, !isSplitView
+            switch Settings.standardSkinFeatures.inputsAndLayout.customButton2
             {
-                return "toggleAltRepresentations"
-            }
-            else
-            {
-                switch Settings.standardSkinFeatures.inputsAndLayout.customButton2
-                {
-                case .fastForward: return "fastForward"
-                case .quickSave: return "quickSave"
-                case .quickLoad: return "quickLoad"
-                case .screenshot: return "screenshot"
-                case .restart: return "restart"
-                default: return ""
-                }
+            case .fastForward: return "fastForward"
+            case .quickSave: return "quickSave"
+            case .quickLoad: return "quickLoad"
+            case .screenshot: return "screenshot"
+            case .restart: return "restart"
+            default: return ""
             }
             
         default: return self.rawValue
@@ -808,12 +656,6 @@ public enum SoftwareInput: String, CaseIterable
         case (.touchScreen, _):
             return .touch(x: AnyInput(stringValue: "touchScreenX", intValue: nil, type: .controller(.controllerSkin), isContinuous: true),
                           y: AnyInput(stringValue: "touchScreenY", intValue: nil, type: .controller(.controllerSkin), isContinuous: true))
-            
-        case (.thumbstick, .n64):
-            return .directional(up: AnyInput(stringValue: "analogStickUp", intValue: nil, type: .controller(.controllerSkin), isContinuous: true),
-                                down: AnyInput(stringValue: "analogStickDown", intValue: nil, type: .controller(.controllerSkin), isContinuous: true),
-                                left: AnyInput(stringValue: "analogStickLeft", intValue: nil, type: .controller(.controllerSkin), isContinuous: true),
-                                right: AnyInput(stringValue: "analogStickRight", intValue: nil, type: .controller(.controllerSkin), isContinuous: true))
               
         case (.thumbstick, _):
             return .directional(up: AnyInput(stringValue: "up", intValue: nil, type: .controller(.controllerSkin), isContinuous: true),
@@ -831,7 +673,7 @@ public enum SoftwareInput: String, CaseIterable
         
         switch gameType
         {
-        case .nes, .snes, .gbc, .gba, .ds:
+        case .gbc, .gba:
             switch (Settings.standardSkinFeatures.inputsAndLayout.abxyLayout, input)
             {
             case (.xbox, .a), (.swapAB, .a): input = .b
@@ -851,90 +693,20 @@ public enum SoftwareInput: String, CaseIterable
         case .dPad:
             switch gameType
             {
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = leftButtonArea.getCompactFaceRect(for: traits).getInsetSquare()
-                }
-                else
-                {
-                    frame = leftButtonArea.getFaceRect(for: traits).getInsetSquare()
-                }
-                
-            case .gba, .snes, .gbc, .nes, .genesis, .ms, .gg:
+            case .gba, .gbc:
                 frame = leftButtonArea.getFaceRect(for: traits).getInsetSquare()
-                
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapLeft, .swapBoth:
-                    frame = leftButtonArea.getSubRect(sections: 8, index: 2, size: 3).getInsetSquare(inset: 10)
-                    
-                default:
-                    frame = leftButtonArea.getSubRect(sections: 8, index: 6, size: 3).getInsetSquare()
-                }
                 
             default: break
             }
             
         case .thumbstick:
-            switch gameType
-            {
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapLeft, .swapBoth:
-                    frame = leftButtonArea.getSubRect(sections: 8, index: 5, size: 4).getInsetSquare()
-                    
-                default:
-                    frame = leftButtonArea.getSubRect(sections: 8, index: 2, size: 4).getInsetSquare(inset: 10)
-                }
-                
-            default: break
-            }
+            break
             
         case .a:
             switch gameType
             {
-            case .gba, .gbc, .nes:
+            case .gba, .gbc:
                 frame = rightButtonArea.getFaceRect(for: traits).getTwoButtonsDiagonal().right
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactFaceRect(for: traits).getFourButtons().right
-                }
-                else
-                {
-                    frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().right
-                }
-                
-            case .snes:
-                frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().right
-                
-            case .genesis:
-                switch Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout
-                {
-                case .button3:
-                    frame = rightButtonArea.getFaceRect(for: traits).getThreeButtonsDiagonal().left
-                    
-                case .button6:
-                    frame = rightButtonArea.getFaceSplitRect(for: traits).bottom.getThreeButtonsDiagonal().left
-                }
-                
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 5, size: 4).getFourButtons().right
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 4).getFourButtons(inset: 10).right
-                }
                 
             default: break
             }
@@ -942,187 +714,29 @@ public enum SoftwareInput: String, CaseIterable
         case .b:
             switch gameType
             {
-            case .gba, .gbc, .nes, .ms, .gg:
+            case .gba, .gbc:
                 frame = rightButtonArea.getFaceRect(for: traits).getTwoButtonsDiagonal().left
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactFaceRect(for: traits).getFourButtons().bottom
-                }
-                else
-                {
-                    frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().bottom
-                }
-                
-            case .snes:
-                frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().bottom
-                
-            case .genesis:
-                switch Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout
-                {
-                case .button3:
-                    frame = rightButtonArea.getFaceRect(for: traits).getThreeButtonsDiagonal().middle
-                    
-                case .button6:
-                    frame = rightButtonArea.getFaceSplitRect(for: traits).bottom.getThreeButtonsDiagonal().middle
-                }
-                
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 5, size: 4).getFourButtons().bottom
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 4).getFourButtons(inset: 10).bottom
-                }
                 
             default: break
             }
             
         case .c:
-            switch gameType
-            {
-            case .ms, .gg:
-                frame = rightButtonArea.getFaceRect(for: traits).getTwoButtonsDiagonal().right
-                
-            case .genesis:
-                switch Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout
-                {
-                case .button3:
-                    frame = rightButtonArea.getFaceRect(for: traits).getThreeButtonsDiagonal().right
-                    
-                case .button6:
-                    frame = rightButtonArea.getFaceSplitRect(for: traits).bottom.getThreeButtonsDiagonal().right
-                }
-                
-            default: break
-            }
+            break
             
         case .x:
-            switch gameType
-            {
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactFaceRect(for: traits).getFourButtons().top
-                }
-                else
-                {
-                    frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().top
-                }
-                
-            case .snes:
-                frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().top
-                
-            case .genesis:
-                switch Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout
-                {
-                case .button3: break
-                    
-                case .button6:
-                    frame = rightButtonArea.getFaceSplitRect(for: traits).top.getThreeButtonsDiagonal().left
-                }
-                
-            default: break
-            }
+            break
             
         case .y:
-            switch gameType
-            {
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactFaceRect(for: traits).getFourButtons().left
-                }
-                else
-                {
-                    frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().left
-                }
-                
-            case .snes:
-                frame = rightButtonArea.getFaceRect(for: traits).getFourButtons().left
-                
-            case .genesis:
-                switch Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout
-                {
-                case .button3: break
-                    
-                case .button6:
-                    frame = rightButtonArea.getFaceSplitRect(for: traits).top.getThreeButtonsDiagonal().middle
-                }
-                
-            default: break
-            }
+            break
             
         case .z:
-            switch gameType
-            {
-            case .n64:
-                switch (Settings.standardSkinFeatures.inputsAndLayout.n64ShoulderLayout, Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout)
-                {
-                case (.swapZL, _):
-                    frame = leftButtonArea.getSubRect(sections: 8, index: 1, size: 1).getTwoButtonsHorizontal().left
-                    
-                case (.swapZR, _):
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 1, size: 1).getTwoButtonsHorizontal().right
-                    
-                case (_, .swapRight), (_, .swapBoth):
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 5, size: 4).getFourButtons().top
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 4).getFourButtons(inset: 10).top
-                }
-                
-            case .genesis:
-                switch Settings.standardSkinFeatures.inputsAndLayout.genesisFaceLayout
-                {
-                case .button3: break
-                    
-                case .button6:
-                    frame = rightButtonArea.getFaceSplitRect(for: traits).top.getThreeButtonsDiagonal().right
-                }
-                
-            default: break
-            }
+            break
             
         case .l:
             switch gameType
             {
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = leftButtonArea.getCompactShoulderRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                else
-                {
-                    frame = leftButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                
-            case .gba, .snes:
+            case .gba:
                 frame = leftButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().left
-                
-            case .n64:
-                switch (Settings.standardSkinFeatures.inputsAndLayout.n64ShoulderLayout, Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout)
-                {
-                case (.swapZL, .swapBoth), (.swapZL, .swapRight):
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 5, size: 4).getFourButtons().top
-                    
-                case (.swapZL, _):
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 4).getFourButtons(inset: 10).top
-                    
-                default:
-                    frame = leftButtonArea.getSubRect(sections: 8, index: 1, size: 1).getTwoButtonsHorizontal().left
-                }
                 
             default: break
             }
@@ -1130,126 +744,28 @@ public enum SoftwareInput: String, CaseIterable
         case .r:
             switch gameType
             {
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactShoulderRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                else
-                {
-                    frame = rightButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                
-            case .gba, .snes:
+            case .gba:
                 frame = rightButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().right
-                
-            case .n64:
-                switch (Settings.standardSkinFeatures.inputsAndLayout.n64ShoulderLayout, Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout)
-                {
-                case (.swapZR, .swapBoth), (.swapZR, .swapRight):
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 5, size: 4).getFourButtons().top
-                    
-                case (.swapZR, _):
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 4).getFourButtons(inset: 10).top
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 1, size: 1).getTwoButtonsHorizontal().right
-                }
                 
             default: break
             }
             
         case .cUp:
-            switch gameType
-            {
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 3).getFourButtons(inset: 10).top
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 6, size: 3).getFourButtons().top
-                }
-                
-            default: break
-            }
+            break
             
         case .cDown:
-            switch gameType
-            {
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 3).getFourButtons(inset: 10).bottom
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 6, size: 3).getFourButtons().bottom
-                }
-                
-            default: break
-            }
+            break
             
         case .cLeft:
-            switch gameType
-            {
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 3).getFourButtons(inset: 10).left
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 6, size: 3).getFourButtons().left
-                }
-                
-            default: break
-            }
+            break
             
         case .cRight:
-            switch gameType
-            {
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 3).getFourButtons(inset: 10).right
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 6, size: 3).getFourButtons().right
-                }
-                
-            default: break
-            }
+            break
             
         case .select:
             switch gameType
             {
-            case .ds where Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless && traits.displayType != .splitView:
-                switch (traits.orientation, Settings.standardSkinFeatures.inputsAndLayout.customButton1)
-                {
-                case (.portrait, .null): frame = leftButtonArea.getTwoButtonsHorizontal().right
-                case (.portrait, _): frame = leftButtonArea.getThreeButtonsHorizontal().middle
-                case (.landscape, .null): frame = leftButtonArea.getTwoButtonsVertical().bottom
-                case (.landscape, _): frame = leftButtonArea.getThreeButtonsVertical().middle
-                }
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = leftButtonArea.getCompactMenuRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                else
-                {
-                    frame = leftButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                
-            case .gba, .snes, .gbc, .nes:
+            case .gba, .gbc:
                 frame = leftButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().right
                 
             default: break
@@ -1258,81 +774,20 @@ public enum SoftwareInput: String, CaseIterable
         case .start:
             switch gameType
             {
-            case .ds where Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless && traits.displayType != .splitView:
-                switch (traits.orientation, Settings.standardSkinFeatures.inputsAndLayout.customButton2)
-                {
-                case (.portrait, .null): frame = rightButtonArea.getTwoButtonsHorizontal().left
-                case (.portrait, _): frame = rightButtonArea.getThreeButtonsHorizontal().middle
-                case (.landscape, .null): frame = rightButtonArea.getTwoButtonsVertical().top
-                case (.landscape, _): frame = rightButtonArea.getThreeButtonsVertical().middle
-                }
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactMenuRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                else
-                {
-                    frame = rightButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                
-            case .gba, .snes, .gbc, .nes, .genesis, .ms, .gg:
+            case .gba, .gbc:
                 frame = rightButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().left
                 
-            case .n64:
-                switch Settings.standardSkinFeatures.inputsAndLayout.n64FaceLayout
-                {
-                case .swapRight, .swapBoth:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 5, size: 4).getFourButtons().left
-                    
-                default:
-                    frame = rightButtonArea.getSubRect(sections: 8, index: 2, size: 4).getFourButtons(inset: 10).left
-                }
-
             default: break
             }
             
         case .mode:
-            switch gameType
-            {
-            case .genesis:
-                frame = leftButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().right
-                
-            default: break
-            }
+            break
             
         case .quickSettings:
             switch gameType
             {
-            case .ds where Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless && traits.displayType != .splitView:
-                switch (traits.orientation, Settings.standardSkinFeatures.inputsAndLayout.customButton2)
-                {
-                case (.portrait, .null): frame = rightButtonArea.getTwoButtonsHorizontal().right
-                case (.portrait, _): frame = rightButtonArea.getThreeButtonsHorizontal().right
-                case (.landscape, .null): frame = rightButtonArea.getTwoButtonsVertical().bottom
-                case (.landscape, _): frame = rightButtonArea.getThreeButtonsVertical().bottom
-                }
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactMenuRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                else
-                {
-                    frame = rightButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                
-            case .gba, .snes, .gbc, .nes, .genesis, .ms, .gg:
+            case .gba, .gbc:
                 frame = rightButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().right
-                
-            case .n64:
-                frame = rightButtonArea.getSubRect(sections: 8, index: 1, size: 1).getTwoButtonsHorizontal().left
                 
             default: break
             }
@@ -1340,32 +795,8 @@ public enum SoftwareInput: String, CaseIterable
         case .menu:
             switch gameType
             {
-            case .ds where Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless && traits.displayType != .splitView:
-                switch (traits.orientation, Settings.standardSkinFeatures.inputsAndLayout.customButton1)
-                {
-                case (.portrait, .null): frame = leftButtonArea.getTwoButtonsHorizontal().left
-                case (.portrait, _): frame = leftButtonArea.getThreeButtonsHorizontal().left
-                case (.landscape, .null): frame = leftButtonArea.getTwoButtonsVertical().top
-                case (.landscape, _): frame = leftButtonArea.getThreeButtonsVertical().top
-                }
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = leftButtonArea.getCompactMenuRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                else
-                {
-                    frame = leftButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                
-            case .gba, .snes, .gbc, .nes, .genesis, .ms, .gg:
+            case .gba, .gbc:
                 frame = leftButtonArea.getMenuRect(for: traits).getTwoButtonsHorizontal().left
-                
-            case .n64:
-                frame = leftButtonArea.getSubRect(sections: 8, index: 1, size: 1).getTwoButtonsHorizontal().right
                 
             default: break
             }
@@ -1373,29 +804,10 @@ public enum SoftwareInput: String, CaseIterable
         case .custom1:
             switch gameType
             {
-            case .ds where Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless && traits.displayType != .splitView:
-                switch traits.orientation
-                {
-                case .portrait: frame = leftButtonArea.getThreeButtonsHorizontal().right
-                case .landscape: frame = leftButtonArea.getThreeButtonsVertical().bottom
-                }
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = leftButtonArea.getCompactShoulderRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                else
-                {
-                    frame = leftButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().right
-                }
-                
-            case .gba, .snes:
+            case .gba:
                 frame = leftButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().right
                 
-            case .gbc, .nes, .genesis, .ms, .gg:
+            case .gbc:
                 frame = leftButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().left
                 
             default: break
@@ -1404,29 +816,10 @@ public enum SoftwareInput: String, CaseIterable
         case .custom2:
             switch gameType
             {
-            case .ds where Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .buttonless && traits.displayType != .splitView:
-                switch traits.orientation
-                {
-                case .portrait: frame = rightButtonArea.getThreeButtonsHorizontal().left
-                case .landscape: frame = rightButtonArea.getThreeButtonsVertical().top
-                }
-                
-            case .ds:
-                if Settings.standardSkinFeatures.inputsAndLayout.dsLayout == .compact,
-                   traits.device == .iphone,
-                   traits.orientation == .portrait
-                {
-                    frame = rightButtonArea.getCompactShoulderRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                else
-                {
-                    frame = rightButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().left
-                }
-                
-            case .gba, .snes:
+            case .gba:
                 frame = rightButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().left
                 
-            case .gbc, .nes, .genesis, .ms, .gg:
+            case .gbc:
                 frame = rightButtonArea.getShoulderRect(for: traits).getTwoButtonsHorizontal().right
                 
             default: break
@@ -1453,57 +846,12 @@ public enum SoftwareInput: String, CaseIterable
         {
         case .dPad: return "dpad"
         case .a: return "a.circle"
-        case .b:
-            switch gameType
-            {
-            case .ms, .gg: return "1.circle"
-            default: return "b.circle"
-            }
-            
-        case .c:
-            switch gameType
-            {
-            case .ms, .gg: return "2.circle"
-            default: return "c.circle"
-            }
-            
-        case .x: return "x.circle"
-        case .y: return "y.circle"
-        case .z:
-            switch Settings.standardSkinFeatures.inputsAndLayout.n64ShoulderLayout
-            {
-            case .swapZL where gameType == .n64, .swapZR where gameType == .n64: return "z.square"
-            default: return "z.circle"
-            }
-            
-        case .l:
-            switch Settings.standardSkinFeatures.inputsAndLayout.n64ShoulderLayout
-            {
-            case .swapZL where gameType == .n64: return "l.circle"
-            default: return "l.square"
-            }
-            
-        case .r:
-            switch Settings.standardSkinFeatures.inputsAndLayout.n64ShoulderLayout
-            {
-            case .swapZR where gameType == .n64: return "r.circle"
-            default: return "r.square"
-            }
-            
+        case .b: return "b.circle"
+        case .l: return "l.square"
+        case .r: return "r.square"
         case .thumbstick: return "circle"
-        case .cUp: return "arrowtriangle.up.circle"
-        case .cDown: return "arrowtriangle.down.circle"
-        case .cLeft: return "arrowtriangle.left.circle"
-        case .cRight: return "arrowtriangle.right.circle"
-        case .start:
-            switch gameType
-            {
-            case .ms, .gg, .genesis, .n64: return "s.circle"
-            default: return "plus.circle"
-            }
-            
+        case .start: return "plus.circle"
         case .select: return "minus.circle"
-        case .mode: return "m.circle"
         case .menu: return "ellipsis.circle"
         case .toggleAltRepresentations: return "arrow.up.arrow.down.circle"
         case .quickSettings:
@@ -1529,21 +877,14 @@ public enum SoftwareInput: String, CaseIterable
             }
             
         case .custom2:
-            if Settings.standardSkinFeatures.inputsAndLayout.dsScreenSwap, gameType == .ds, !isSplitView
+            switch Settings.standardSkinFeatures.inputsAndLayout.customButton2
             {
-                return "arrow.up.arrow.down.circle"
-            }
-            else
-            {
-                switch Settings.standardSkinFeatures.inputsAndLayout.customButton2
-                {
-                case .fastForward: return "forward.circle"
-                case .quickSave: return "arrow.down.to.line.circle"
-                case .quickLoad: return "arrow.up.to.line.circle"
-                case .screenshot: return "camera.circle"
-                case .restart: return "backward.end.circle"
-                default: return ""
-                }
+            case .fastForward: return "forward.circle"
+            case .quickSave: return "arrow.down.to.line.circle"
+            case .quickLoad: return "arrow.up.to.line.circle"
+            case .screenshot: return "camera.circle"
+            case .restart: return "backward.end.circle"
+            default: return ""
             }
             
         default: return ""

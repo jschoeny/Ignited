@@ -14,7 +14,6 @@ import DeltaCore
 import Harmony
 import Roxas
 import ZIPFoundation
-import MelonDSDeltaCore
 
 extension DatabaseManager
 {
@@ -106,98 +105,6 @@ extension DatabaseManager
         else
         {
             print("Failed to update default skin for system:", system)
-        }
-        
-        switch system
-        {
-        case .ds where core == MelonDS.core:
-            
-            // Returns nil if game already exists.
-            func makeBIOS(name: String, identifier: String) -> Game?
-            {
-                let predicate = NSPredicate(format: "%K == %@", #keyPath(Game.identifier), identifier)
-                if let _ = Game.instancesWithPredicate(predicate, inManagedObjectContext: context, type: Game.self).first
-                {
-                    // BIOS already exists, so don't do anything.
-                    return nil
-                }
-                
-                let filename: String
-                
-                switch identifier
-                {
-                case Game.melonDSBIOSIdentifier:
-                    guard
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.bios7URL.path) &&
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.bios9URL.path) &&
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.firmwareURL.path)
-                    else { return nil }
-                    
-                    filename = "nds.bios"
-                    
-                case Game.melonDSDSiBIOSIdentifier:
-                    guard
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiBIOS7URL.path) &&
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiBIOS9URL.path) &&
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiFirmwareURL.path) &&
-                        FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiNANDURL.path)
-                    else { return nil }
-                    
-                    filename = "dsi.bios"
-                
-                default: filename = "system.bios"
-                }
-                
-                let bios = Game(context: context)
-                bios.name = name
-                bios.identifier = identifier
-                bios.type = .ds
-                bios.filename = filename
-                
-                var artworkURL: URL? = nil
-                
-                if let artwork = UIImage(named: "DS"),
-                   let artworkData = artwork.pngData()
-                {
-                    do
-                    {
-                        artworkURL = DatabaseManager.artworkURL(for: bios)
-                        try artworkData.write(to: artworkURL!, options: .atomic)
-                    }
-                    catch
-                    {
-                        print("Failed to copy default DS home screen artwork.", error)
-                    }
-                }
-                
-                bios.artworkURL = artworkURL
-                
-                return bios
-            }
-            
-            let insertedGames = [
-                (name: NSLocalizedString("DS Home Screen", comment: ""), identifier: Game.melonDSBIOSIdentifier),
-                (name: NSLocalizedString("DSi Home Screen (Beta)", comment: ""), identifier: Game.melonDSDSiBIOSIdentifier)
-            ].compactMap(makeBIOS)
-            
-            // Break if we didn't create any new Games.
-            guard !insertedGames.isEmpty else { break }
-            
-            let gameCollection = GameCollection(context: context)
-            gameCollection.identifier = GameType.ds.rawValue
-            gameCollection.index = Int16(System.ds.year)
-            gameCollection.games.formUnion(insertedGames)
-            
-        case .ds:
-            let predicate = NSPredicate(format: "%K IN %@", #keyPath(Game.identifier), [Game.melonDSBIOSIdentifier, Game.melonDSDSiBIOSIdentifier])
-            
-            let games = Game.instancesWithPredicate(predicate, inManagedObjectContext: context, type: Game.self)
-            for game in games
-            {
-                context.delete(game)
-            }
-            
-        default: break
         }
     }
 }
@@ -384,16 +291,9 @@ extension DatabaseManager
                     
                     switch gameType
                     {
-                    case .nes: artwork = UIImage(named: "NES")
-                    case .snes: artwork = UIImage(named: "SNES")
-                    case .n64: artwork = UIImage(named: "N64")
                     case .gbc where url.pathExtension.lowercased() == "gb": artwork = UIImage(named: "GB")
                     case .gbc where url.pathExtension.lowercased() == "gbc": artwork = UIImage(named: "GBC")
                     case .gba: artwork = UIImage(named: "GBA")
-                    case .ds: artwork = UIImage(named: "DS")
-                    case .genesis: artwork = UIImage(named: "GEN")
-                    case .ms: artwork = UIImage(named: "MS")
-                    case .gg: artwork = UIImage(named: "GG")
                     default: break
                     }
                     
@@ -706,16 +606,9 @@ extension DatabaseManager
                 
                 switch game.type
                 {
-                case .nes: artwork = UIImage(named: "NES")
-                case .snes: artwork = UIImage(named: "SNES")
-                case .n64: artwork = UIImage(named: "N64")
                 case .gbc where game.fileURL.pathExtension.lowercased() == "gb": artwork = UIImage(named: "GB")
                 case .gbc where game.fileURL.pathExtension.lowercased() == "gbc": artwork = UIImage(named: "GBC")
                 case .gba: artwork = UIImage(named: "GBA")
-                case .ds: artwork = UIImage(named: "DS")
-                case .genesis: artwork = UIImage(named: "GEN")
-                case .ms: artwork = UIImage(named: "MS")
-                case .gg: artwork = UIImage(named: "GG")
                 default: break
                 }
                 
@@ -768,13 +661,6 @@ extension DatabaseManager
                 for game in games
                 {
                     let temporaryGame = context.object(with: game.objectID) as! Game
-                    
-                    guard game.identifier != Game.legacyMelonDSBIOSIdentifier,
-                          game.identifier != Game.legacyMelonDSDSiBIOSIdentifier else
-                    {
-                        context.delete(temporaryGame)
-                        continue
-                    }
                     
                     guard let gameType = GameType(fileExtension: game.fileURL.pathExtension),
                           (gameType.rawValue != game.type.rawValue) || repairAll else

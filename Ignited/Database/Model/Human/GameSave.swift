@@ -8,8 +8,6 @@
 
 import Foundation
 
-import GBCDeltaCore
-
 import Harmony
 
 @objc(GameSave)
@@ -64,7 +62,7 @@ extension GameSave: Syncable
         // self.game may be nil if being downloaded, so don't enforce it.
         // guard let identifier = self.game?.identifier else { return false }
         
-        return self.game?.identifier != Game.melonDSBIOSIdentifier && self.game?.identifier != Game.melonDSDSiBIOSIdentifier
+        return true
     }
     
     public func resolveConflict(_ record: AnyRecord) -> ConflictResolution {

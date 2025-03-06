@@ -11,7 +11,6 @@ import MobileCoreServices
 import AVFoundation
 
 import DeltaCore
-import MelonDSDeltaCore
 import Features
 
 import Roxas
@@ -25,8 +24,6 @@ extension GameCollectionViewController
     {
         case alreadyRunning
         case downloadingGameSave
-        case biosNotFound
-        case openGLESVersionMismatch
         case criticalBatteryLevel
     }
     
@@ -177,22 +174,6 @@ extension GameCollectionViewController
             
             destinationViewController.game = game
             
-            if let emulatorBridge = destinationViewController.emulatorCore?.deltaCore.emulatorBridge as? MelonDSEmulatorBridge
-            {
-                //TODO: Update this to work with multiple processes by retrieving emulatorBridge directly from emulatorCore.
-                
-                //TODO: DSi is only being enabled for the home screen. Check if there are games that benefit from running in DSi mode and add them to this check.
-                
-                if game.identifier == Game.melonDSDSiBIOSIdentifier
-                {
-                    emulatorBridge.systemType = .dsi
-                }
-                else
-                {
-                    emulatorBridge.systemType = .ds
-                }
-            }
-            
             if let saveState = self.activeSaveState
             {
                 // Must be synchronous or else there will be a flash of black
@@ -201,11 +182,7 @@ extension GameCollectionViewController
                 
                 do
                 {
-                    // don't load save states on DSi home screen
-                    if game.identifier != Game.melonDSDSiBIOSIdentifier
-                    {
-                        try destinationViewController.emulatorCore?.load(saveState)
-                    }
+                    try destinationViewController.emulatorCore?.load(saveState)
                 }
                 catch EmulatorCore.SaveStateError.doesNotExist
                 {
@@ -232,20 +209,6 @@ extension GameCollectionViewController
             
             destinationViewController.game = game
             
-            if let emulatorBridge = destinationViewController.emulatorCore?.deltaCore.emulatorBridge as? MelonDSEmulatorBridge
-            {
-                //TODO: Update this to work with multiple processes by retrieving emulatorBridge directly from emulatorCore.
-                
-                if game.identifier == Game.melonDSDSiBIOSIdentifier
-                {
-                    emulatorBridge.systemType = .dsi
-                }
-                else
-                {
-                    emulatorBridge.systemType = .ds
-                }
-            }
-            
             if let saveState = self.activeSaveState
             {
                 // Must be synchronous or else there will be a flash of black
@@ -254,11 +217,7 @@ extension GameCollectionViewController
                 
                 do
                 {
-                    // don't load save states on DSi home screen
-                    if game.identifier != Game.melonDSDSiBIOSIdentifier
-                    {
-                        try destinationViewController.emulatorCore?.load(saveState)
-                    }
+                    try destinationViewController.emulatorCore?.load(saveState)
                 }
                 catch EmulatorCore.SaveStateError.doesNotExist
                 {
@@ -677,20 +636,6 @@ private extension GameCollectionViewController
                 alertController.addAction(.ok)
                 self.present(alertController, animated: true, completion: nil)
             }
-            catch LaunchError.biosNotFound
-            {
-                let alertController = UIAlertController(title: NSLocalizedString("Missing Required DS Files", comment: ""), message: NSLocalizedString("Ignited requires certain files to play Nintendo DS games. Please import them to launch this game.", comment: ""), preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("Import Files", comment: ""), style: .default) { _ in
-                    self.performSegue(withIdentifier: "showDSSettings", sender: nil)
-                })
-                alertController.addAction(.cancel)
-                
-                self.present(alertController, animated: true, completion: nil)
-            }
-            catch LaunchError.openGLESVersionMismatch
-            {
-                self.showOpenGLESVersionMismatchError()
-            }
             catch LaunchError.criticalBatteryLevel
             {
                 self.showCriticalBatteryError()
@@ -746,29 +691,6 @@ private extension GameCollectionViewController
             }
         }
         
-        if game.type == .ds && Settings.preferredCore(for: .ds) == MelonDS.core
-        {
-            if game.identifier == Game.melonDSDSiBIOSIdentifier
-            {
-                guard
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiBIOS7URL.path) &&
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiBIOS9URL.path) &&
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiFirmwareURL.path) &&
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.dsiNANDURL.path)
-                else { throw LaunchError.biosNotFound }
-            }
-            else
-            {
-                guard
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.bios7URL.path) &&
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.bios9URL.path) &&
-                    FileManager.default.fileExists(atPath: MelonDSEmulatorBridge.shared.firmwareURL.path)
-                else { throw LaunchError.biosNotFound }
-            }
-        }
-        
-        guard self.checkOpenGLESVersion(for: game) else { throw LaunchError.openGLESVersionMismatch }
-        
         guard !self.checkForCriticalBattery() else { throw LaunchError.criticalBatteryLevel }
     }
     
@@ -776,11 +698,6 @@ private extension GameCollectionViewController
     {
         guard let emulatorCore = self.activeEmulatorCore else { return }
         guard let game = emulatorCore.game as? Game else { return }
-        
-        guard self.checkOpenGLESVersion(for: game) else {
-            self.showOpenGLESVersionMismatchError()
-            return
-        }
         
         guard !self.checkForCriticalBattery() else {
             self.showCriticalBatteryError()
@@ -816,11 +733,7 @@ private extension GameCollectionViewController
         if Settings.userInterfaceFeatures.randomGame.useCollection,
            let gameCollection = Settings.previousGameCollection
         {
-            gameFetchRequest.predicate = NSPredicate(format: "%K == %@ AND %K != %@ AND %K != %@", #keyPath(Game.gameCollection), gameCollection, #keyPath(Game.identifier), Game.melonDSDSiBIOSIdentifier, #keyPath(Game.identifier), Game.melonDSBIOSIdentifier)
-        }
-        else
-        {
-            gameFetchRequest.predicate = NSPredicate(format: "%K != %@ AND %K != %@", #keyPath(Game.identifier), Game.melonDSDSiBIOSIdentifier, #keyPath(Game.identifier), Game.melonDSBIOSIdentifier)
+            gameFetchRequest.predicate = NSPredicate(format: "%K == %@", #keyPath(Game.gameCollection), gameCollection)
         }
         
         var games: [Game] = []
@@ -833,8 +746,6 @@ private extension GameCollectionViewController
         {
             print(error)
         }
-        
-        games = games.filter { self.checkOpenGLESVersion(for: $0) }
         
         guard let randomGame = games.randomElement() else {
             self.showNoValidGamesError()
@@ -865,11 +776,6 @@ private extension GameCollectionViewController
     {
         guard let game = notification.object as? Game else { return }
         
-        guard self.checkOpenGLESVersion(for: game) else {
-            self.showOpenGLESVersionMismatchError()
-            return
-        }
-        
         guard !self.checkForCriticalBattery() else {
             self.showCriticalBatteryError()
             return
@@ -893,36 +799,6 @@ private extension GameCollectionViewController
         }
         
         self.performSegue(withIdentifier: "resumeCurrentGame", sender: game)
-    }
-    
-    func checkOpenGLESVersion(for game: Game) -> Bool
-    {
-        if game.type == .n64,
-           let currentOpenGLESVersion = Settings.currentOpenGLESVersion
-        {
-            let requestedOpenGLESVersion: Int
-            
-            if Settings.n64Features.openGLES2.enabledGames.contains(where: { $0 == game.identifier }) {
-                requestedOpenGLESVersion = 2
-            }
-            else
-            {
-                requestedOpenGLESVersion = 3
-            }
-            
-            guard currentOpenGLESVersion == requestedOpenGLESVersion else { return false }
-        }
-        
-        return true
-    }
-    
-    func showOpenGLESVersionMismatchError()
-    {
-        let currentVersion = Settings.currentOpenGLESVersion
-        
-        let alertController = UIAlertController(title: NSLocalizedString("OpenGLES Mismatch", comment: ""), message: NSLocalizedString("The OpenGLES version this game is trying to use (\(currentVersion == 2 ? "OpenGLES 3" : "OpenGLES 2")) does not match the version the core is currently using (\(currentVersion == 2 ? "OpenGLES 2" : "OpenGLES 3")). You must restart the app to play this game.", comment: ""), preferredStyle: .alert)
-        alertController.addAction(.ok)
-        self.present(alertController, animated: true, completion: nil)
     }
     
     func showNoValidGamesError()
@@ -1011,32 +887,7 @@ private extension GameCollectionViewController
             self.changePreferredControllerSkin(for: game)
         })
         
-        let invalidVRAMEnabled = Settings.snesFeatures.allowInvalidVRAMAccess.enabledGames.contains(where: { $0 == game.identifier })
-        
-        let invalidVRAMAccessAction = UIAction(title: NSLocalizedString("Invalid VRAM Access", comment: ""),
-                                               image: UIImage(systemName: "memorychip"),
-                                               state: invalidVRAMEnabled ? .on : .off,
-                                               handler: { [unowned self] action in
-            self.toggleInvalidVRAM(for: game, enable: !invalidVRAMEnabled)
-        })
-        
-        let openGLES2Enabled = Settings.n64Features.openGLES2.enabledGames.contains(where: { $0 == game.identifier })
-        
-        let openGLES2Action = UIAction(title: NSLocalizedString("OpenGLES 2", comment: ""),
-                                   image: UIImage(systemName: "2.circle"),
-                                   state: openGLES2Enabled ? .on : .off,
-                                   handler: { [unowned self] action in
-            self.toggleOpenGLES3(for: game, enable: !openGLES2Enabled)
-        })
-        
         var gameSettingsActions = [changeControllerSkinAction]
-        
-        switch game.type
-        {
-        case .snes: gameSettingsActions.append(invalidVRAMAccessAction)
-        case .n64: gameSettingsActions.append(openGLES2Action)
-        default: break
-        }
         
         let resetPlaytimeAction = UIAction(title: NSLocalizedString("Reset Playtime", comment: ""),
                                            image: UIImage(systemName: "arrow.circlepath"),
@@ -1094,8 +945,6 @@ private extension GameCollectionViewController
         {
         case GameType.unknown:
             menuActions = [shareAction, artworkMenu, renameMenu, gameSettingsMenu, deleteAction]
-        case .ds where game.identifier == Game.melonDSBIOSIdentifier || game.identifier == Game.melonDSDSiBIOSIdentifier:
-            menuActions = [favoriteAction, artworkMenu, renameMenu, gameSettingsMenu, saveStatesAction]
         default:
             menuActions = [shareAction, favoriteAction, artworkMenu, renameMenu, gameSettingsMenu, saveMenu, deleteAction]
         }
@@ -1592,23 +1441,6 @@ extension GameCollectionViewController: UIViewControllerPreviewingDelegate
             gameViewController.previewSaveState = nil
             gameViewController.previewImage = nil
         }
-        
-        if let emulatorBridge = gameViewController.emulatorCore?.deltaCore.emulatorBridge as? MelonDSEmulatorBridge
-        {
-            //TODO: Update this to work with multiple processes by retrieving emulatorBridge directly from emulatorCore.
-
-            if game.identifier == Game.melonDSDSiBIOSIdentifier
-            {
-                emulatorBridge.systemType = .dsi
-            }
-            else
-            {
-                emulatorBridge.systemType = .ds
-            }
-        }
-        
-//        let actions = self.actions(for: game)
-//        gameViewController.overridePreviewActionItems = actions
         
         return gameViewController
     }

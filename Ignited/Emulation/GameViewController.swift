@@ -11,13 +11,7 @@ import AVFoundation
 import Photos
 
 import DeltaCore
-import GBADeltaCore
 import mGBADeltaCore
-import GBCDeltaCore
-import N64DeltaCore
-import MelonDSDeltaCore
-import GPGXDeltaCore
-import SNESDeltaCore
 import Systems
 
 import Roxas
@@ -108,7 +102,6 @@ class GameViewController: DeltaCore.GameViewController
             
             self.updateControllers()
             self.updateCoreSettings()
-            self.updateGraphics()
             self.updateAudio()
             
             self.presentedGyroAlert = false
@@ -193,8 +186,7 @@ class GameViewController: DeltaCore.GameViewController
     
     private var isMicEnabled: Bool {
         get {
-            if let game = self.game,
-               game.type != .ds
+            if let game = self.game
             {
                 return false
             }
@@ -289,13 +281,12 @@ class GameViewController: DeltaCore.GameViewController
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.didEnterBackground(with:)), name: UIApplication.didEnterBackgroundNotification, object: UIApplication.shared)
         
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.appWillBecomeInactive(with:)), name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.appWillBecomeActive(with:)), name: UIApplication.didBecomeActiveNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.settingsDidChange(with:)), name: Settings.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.deepLinkControllerLaunchGame(with:)), name: .deepLinkControllerLaunchGame, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.didActivateGyro(with:)), name: GBA.didActivateGyroNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.didDeactivateGyro(with:)), name: GBA.didDeactivateGyroNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.didActivateGyro(with:)), name: mGBA.didActivateGyroNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.didDeactivateGyro(with:)), name: mGBA.didDeactivateGyroNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(GameViewController.emulationDidQuit(with:)), name: EmulatorCore.emulationDidQuitNotification, object: nil)
         
@@ -788,47 +779,14 @@ extension GameViewController
                 pauseViewController.paletteItem = nil
             }
             
-            if let game = self.game,
-               game.type != .ds
+            if let game = self.game
             {
                 pauseViewController.microphoneItem = nil
             }
             
-            if let game = self.game,
-               game.type != .n64
+            if let game = self.game
             {
                 pauseViewController.overscanEditorItem = nil
-            }
-            
-            switch self.game?.type
-            {
-            case .genesis?, .ms?, .gg?:
-                // GPGX core does not support cheats yet.
-                pauseViewController.cheatCodesItem = nil
-                
-            case .gbc? where self.emulatorCore?.deltaCore == GBC.core:
-                // Rewind is disabled on GBC. Crashes gambette
-                pauseViewController.rewindItem = nil
-
-            default: break
-            }
-            
-            if let url = self.game?.fileURL,
-               let fileName = url.path.components(separatedBy: "/").last
-            {
-                switch fileName
-                {
-                case "dsi.bios":
-                    pauseViewController.rewindItem = nil
-                    pauseViewController.saveStateItem = nil
-                    pauseViewController.loadStateItem = nil
-                    pauseViewController.cheatCodesItem = nil
-                    
-                case "nds.bios":
-                    pauseViewController.cheatCodesItem = nil
-                    
-                default: break
-                }
             }
             
             self.pauseViewController = pauseViewController
@@ -1315,7 +1273,7 @@ private extension GameViewController
         
         self.controllerView.translucentControllerSkinOpacity = Settings.controllerFeatures.skin.opacity
         self.controllerView.isDiagonalDpadInputsEnabled = Settings.controllerFeatures.skin.diagonalDpad
-        self.ignoreInputFrames = Settings.controllerFeatures.skin.ignoreInputFrames && emulatorCore.deltaCore.gameType != .ds
+        self.ignoreInputFrames = Settings.controllerFeatures.skin.ignoreInputFrames
         self.backgroundColor = self.isEditingOverscanInsets ? UIColor.red : Settings.controllerFeatures.skin.colorMode.uiColor
     }
     
@@ -1398,10 +1356,7 @@ private extension GameViewController
                 }
                 
                 // update auto save state to prevent overwriting newer game saves when loading latest auto save
-                if game.type != .n64 // N64 saves game when saving state, causing loop
-                {
-                    self.updateAutoSaveState()
-                }
+                self.updateAutoSaveState()
             }
             catch CocoaError.fileNoSuchFile
             {
@@ -1724,42 +1679,7 @@ private extension GameViewController
         guard let emulatorCore = self.emulatorCore,
               let game = self.game as? Game else { return }
         
-        if let emulatorBridge = emulatorCore.deltaCore.emulatorBridge as? SNESEmulatorBridge
-        {
-            emulatorBridge.isInvalidVRAMAccessEnabled = Settings.snesFeatures.allowInvalidVRAMAccess.enabledGames.contains(where: { $0 == game.identifier })
-        }
-        else if let emulatorBridge = emulatorCore.deltaCore.emulatorBridge as? N64EmulatorBridge
-        {
-            emulatorBridge.overscanTop = game.overscanTop
-            emulatorBridge.overscanBottom = game.overscanBottom
-            emulatorBridge.overscanLeft = game.overscanLeft
-            emulatorBridge.overscanRight = game.overscanRight
-            
-            self.overscanEditorView.topInsetLabel.text = "\(game.overscanTop)"
-            self.overscanEditorView.bottomInsetLabel.text = "\(game.overscanBottom)"
-            self.overscanEditorView.leftInsetLabel.text = "\(game.overscanLeft)"
-            self.overscanEditorView.rightInsetLabel.text = "\(game.overscanRight)"
-            
-            emulatorBridge.updateOverscanConfig()
-        }
-        else if let emulatorBridge = emulatorCore.deltaCore.emulatorBridge as? GBCEmulatorBridge
-        {
-            if Settings.gbFeatures.palettes.multiPalette
-            {
-                setMultiPalette(for: emulatorBridge,
-                                palette1: Settings.gbFeatures.palettes.palette.colors,
-                                palette2: Settings.gbFeatures.palettes.spritePalette1.colors,
-                                palette3: Settings.gbFeatures.palettes.spritePalette2.colors)
-            }
-            else
-            {
-                setSinglePalette(for: emulatorBridge,
-                                 palette: Settings.gbFeatures.palettes.palette.colors)
-            }
-            
-            emulatorBridge.updatePalette()
-        }
-        else if let emulatorBridge = emulatorCore.deltaCore.emulatorBridge as? mGBCEmulatorBridge
+        if let emulatorBridge = emulatorCore.deltaCore.emulatorBridge as? mGBCEmulatorBridge
         {
             if Settings.gbFeatures.palettes.multiPalette
             {
@@ -1815,38 +1735,6 @@ private extension GameViewController
 /// Palettes
 private extension GameViewController
 {
-    func setSinglePalette(for emulatorBridge: GBCEmulatorBridge, palette: [UInt32])
-    {
-        emulatorBridge.palette0color0 = palette[0]
-        emulatorBridge.palette0color1 = palette[1]
-        emulatorBridge.palette0color2 = palette[2]
-        emulatorBridge.palette0color3 = palette[3]
-        emulatorBridge.palette1color0 = palette[0]
-        emulatorBridge.palette1color1 = palette[1]
-        emulatorBridge.palette1color2 = palette[2]
-        emulatorBridge.palette1color3 = palette[3]
-        emulatorBridge.palette2color0 = palette[0]
-        emulatorBridge.palette2color1 = palette[1]
-        emulatorBridge.palette2color2 = palette[2]
-        emulatorBridge.palette2color3 = palette[3]
-    }
-    
-    func setMultiPalette(for emulatorBridge: GBCEmulatorBridge, palette1: [UInt32], palette2: [UInt32], palette3: [UInt32])
-    {
-        emulatorBridge.palette0color0 = palette1[0]
-        emulatorBridge.palette0color1 = palette1[1]
-        emulatorBridge.palette0color2 = palette1[2]
-        emulatorBridge.palette0color3 = palette1[3]
-        emulatorBridge.palette1color0 = palette2[0]
-        emulatorBridge.palette1color1 = palette2[1]
-        emulatorBridge.palette1color2 = palette2[2]
-        emulatorBridge.palette1color3 = palette2[3]
-        emulatorBridge.palette2color0 = palette3[0]
-        emulatorBridge.palette2color1 = palette3[1]
-        emulatorBridge.palette2color2 = palette3[2]
-        emulatorBridge.palette2color3 = palette3[3]
-    }
-    
     func setSinglePalette(for emulatorBridge: mGBCEmulatorBridge, palette: [UInt32])
     {
         emulatorBridge.palette0color0 = palette[0]
@@ -2038,44 +1926,12 @@ private extension GameViewController
     }
 }
 
-//MARK: - Graphics -
-/// Graphics
-private extension GameViewController
-{
-    func updateGraphics()
-    {
-        guard let game = self.game as? Game else { return }
-        
-        guard game.type == .n64 else { return }
-        
-        if Settings.n64Features.openGLES2.enabledGames.contains(where: { $0 == game.identifier }) {
-            self.emulatorCore?.videoManager.renderingAPI = .openGLES2
-            Settings.currentOpenGLESVersion = 2
-        }
-        else
-        {
-            self.emulatorCore?.videoManager.renderingAPI = .openGLES3
-            Settings.currentOpenGLESVersion = 3
-        }
-    }
-}
-
 //MARK: - Audio -
 /// Audio
 private extension GameViewController
 {
     func updateAudio()
     {
-        if self.emulatorCore?.audioManager.isMicEnabled != self.isMicEnabled {
-            self.emulatorCore?.audioManager.isMicEnabled = self.isMicEnabled
-            
-            if let emulatorCore = self.emulatorCore,
-               let emulatorBridge = emulatorCore.deltaCore.emulatorBridge as? MelonDSEmulatorBridge
-            {
-                emulatorBridge.prepareAudioEngine()
-            }
-        }
-        
         if self.emulatorCore?.audioManager.respectsSilentMode != Settings.gameplayFeatures.gameAudio.respectSilent {
             self.emulatorCore?.audioManager.respectsSilentMode = Settings.gameplayFeatures.gameAudio.respectSilent
         }
@@ -3348,16 +3204,6 @@ private extension GameViewController
         }
     }
     
-    @objc func appWillBecomeActive(with notification: Notification)
-    {
-       if let bridge = self.emulatorCore?.deltaCore.emulatorBridge as? MelonDSEmulatorBridge
-        {
-           DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                bridge.forceOpenLid = true
-            }
-        }
-    }
-    
     @objc func managedObjectContextDidChange(with notification: Notification)
     {
         guard let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject> else { return }
@@ -3749,11 +3595,6 @@ private extension GameViewController
         guard Settings.gameplayFeatures.rewind.isEnabled,
               self.emulatorCore?.state == .running,
               let game = self.game as? Game else { return }
-        
-        // disable on GBC. saving state without pausing emulation crashes gambette
-        if let _ = self.emulatorCore?.deltaCore.emulatorBridge as? GBCEmulatorBridge {
-            return
-        }
         
         let fetchRequest: NSFetchRequest<SaveState> = SaveState.fetchRequest()
         fetchRequest.returnsObjectsAsFaults = false
