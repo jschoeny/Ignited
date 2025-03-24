@@ -19,6 +19,8 @@ public struct StandardControllerSkin
     public var name: String { "StandardControllerSkin" }
     public var identifier: String
     public var gameType: GameType
+    public var gameIdentifier: String? { nil }
+    public var gameName: String? { nil }
     
     public var inputMappingMode: Bool
     public var isDebugModeEnabled: Bool { false }
@@ -112,6 +114,11 @@ extension StandardControllerSkin: ControllerSkinProtocol
         }
         
         return items
+    }
+
+    public func hasLiveSkin(for traits: Skin.Traits) -> Bool
+    {
+        return false
     }
     
     public func liveSkinItems(for traits: Skin.Traits, alt: Bool) -> [Skin.LiveSkinItem]?

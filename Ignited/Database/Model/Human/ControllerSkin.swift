@@ -54,6 +54,10 @@ public class ControllerSkin: _ControllerSkin
         return self.controllerSkin?.hasAltRepresentations ?? false
     }
     
+   public var gameName: String? {
+       return self.controllerSkin?.gameName
+   }
+    
     private lazy var controllerSkin: DeltaCore.ControllerSkin? = {
         let controllerSkin = self.isStandard ? DeltaCore.ControllerSkin.standardControllerSkin(for: self.gameType) : DeltaCore.ControllerSkin(fileURL: self.fileURL)
         return controllerSkin
@@ -94,6 +98,11 @@ extension ControllerSkin: ControllerSkinProtocol
     public func items(for traits: DeltaCore.ControllerSkin.Traits, alt: Bool) -> [DeltaCore.ControllerSkin.Item]?
     {
         return self.controllerSkin?.items(for: traits, alt: alt)
+    }
+
+    public func hasLiveSkin(for traits: DeltaCore.ControllerSkin.Traits) -> Bool
+    {
+        return self.controllerSkin?.hasLiveSkin(for: traits) ?? false
     }
 
     public func liveSkinItems(for traits: DeltaCore.ControllerSkin.Traits, alt: Bool) -> [DeltaCore.ControllerSkin.LiveSkinItem]?
@@ -149,7 +158,7 @@ extension ControllerSkin: Syncable
     }
     
     public var syncableKeys: Set<AnyKeyPath> {
-        return [\ControllerSkin.filename, \ControllerSkin.gameType, \ControllerSkin.name, \ControllerSkin.supportedConfigurations]
+        return [\ControllerSkin.filename, \ControllerSkin.gameType, \ControllerSkin.name, \ControllerSkin.supportedConfigurations, \ControllerSkin.gameIdentifier]
     }
     
     public var syncableFiles: Set<File> {

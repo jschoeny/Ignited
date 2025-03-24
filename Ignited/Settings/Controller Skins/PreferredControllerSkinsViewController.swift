@@ -106,6 +106,7 @@ extension PreferredControllerSkinsViewController
         
         if let game = self.game
         {
+            controllerSkinsViewController.game = game
             switch section
             {
             case .portrait: isResetButtonVisible = (game.preferredPortraitSkin != nil)
@@ -255,15 +256,42 @@ extension PreferredControllerSkinsViewController: ControllerSkinsViewControllerD
 {
     func controllerSkinsViewController(_ controllerSkinsViewController: ControllerSkinsViewController, didChooseControllerSkin controllerSkin: ControllerSkin)
     {
+        var showLiveSkinAlert = false
         if controllerSkin.supports(controllerSkinsViewController.traits, alt: false)
         {
             if let game = self.game
             {
-                Settings.setPreferredControllerSkin(controllerSkin, for: game, traits: controllerSkinsViewController.traits)
+                if controllerSkin.gameIdentifier != nil && controllerSkin.gameIdentifier != game.identifier
+                {
+                    let alertController = UIAlertController(title: NSLocalizedString("Cannot Select Skin", comment: ""), message: NSLocalizedString("This skin is not compatible with this game.", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(.ok)
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                else
+                {
+                    Settings.setPreferredControllerSkin(controllerSkin, for: game, traits: controllerSkinsViewController.traits)
+                    if controllerSkin.hasLiveSkin(for: controllerSkinsViewController.traits), !Settings.proFeaturesEnabled
+                    {
+                        showLiveSkinAlert = true
+                    }
+                }
             }
             else
             {
-                Settings.setPreferredControllerSkin(controllerSkin, for: self.system, traits: controllerSkinsViewController.traits)
+                if controllerSkin.gameIdentifier != nil
+                {
+                    let alertController = UIAlertController(title: NSLocalizedString("Cannot Select Skin", comment: ""), message: NSLocalizedString("This skin can only be selected for the following game:\n\n\(controllerSkin.gameName!)\n(\(controllerSkin.gameIdentifier!))", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(.ok)
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                else
+                {
+                    Settings.setPreferredControllerSkin(controllerSkin, for: self.system, traits: controllerSkinsViewController.traits)
+                    if controllerSkin.hasLiveSkin(for: controllerSkinsViewController.traits), !Settings.proFeaturesEnabled
+                    {
+                        showLiveSkinAlert = true
+                    }
+                }
             }
         }
         else
@@ -274,6 +302,12 @@ extension PreferredControllerSkinsViewController: ControllerSkinsViewControllerD
         }
         
         _ = self.navigationController?.popViewController(animated: true)
+        if showLiveSkinAlert
+        {
+            let alertController = UIAlertController(title: NSLocalizedString("LiveSkins Disabled", comment: ""), message: NSLocalizedString("LiveSkin features are only available with Ignited Pro. You can still use the skin, but features exclusive to Ignited Pro will be disabled.", comment: ""), preferredStyle: .alert)
+            alertController.addAction(.ok)
+            self.present(alertController, animated: true, completion: nil)
+        }
     }
     
     func controllerSkinsViewControllerDidResetControllerSkin(_ controllerSkinsViewController: ControllerSkinsViewController)

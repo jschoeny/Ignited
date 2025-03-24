@@ -31,6 +31,7 @@ extension ControllerSkin
         self.name = skin.name
         self.identifier = skin.identifier
         self.gameType = skin.gameType
+        self.gameIdentifier = skin.gameIdentifier
         
         var configurations = ControllerSkinConfigurations()
         

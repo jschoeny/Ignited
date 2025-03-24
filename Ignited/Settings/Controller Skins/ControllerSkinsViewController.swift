@@ -34,6 +34,12 @@ class ControllerSkinsViewController: UITableViewController
         }
     }
     
+    var game: Game? {
+        didSet {
+            self.updateDataSource()
+        }
+    }
+    
     var isResetButtonVisible: Bool = true
     
     private let dataSource: RSTFetchedResultsTableViewPrefetchingDataSource<ControllerSkin, UIImage>
@@ -187,6 +193,17 @@ private extension ControllerSkinsViewController
         else
         {
             fetchRequest.sortDescriptors = [NSSortDescriptor(key: #keyPath(ControllerSkin.isStandard), ascending: true), NSSortDescriptor(key: #keyPath(ControllerSkin.gameType), ascending: true), NSSortDescriptor(key: #keyPath(ControllerSkin.name), ascending: true)]
+        }
+
+        if let gameIdentifier = self.game?.identifier
+        {
+            // Filter out controller skins that, if they have a game identifier, don't match the game's identifier.
+            // Make sure to add to existing predicate if it already exists.
+            let gameIdentifierPredicate = NSPredicate(format: "%K == nil OR %K == %@",
+                                                      #keyPath(ControllerSkin.gameIdentifier),
+                                                      #keyPath(ControllerSkin.gameIdentifier),
+                                                      gameIdentifier)
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [fetchRequest.predicate ?? NSPredicate(value: true), gameIdentifierPredicate])
         }
         
         self.dataSource.fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DatabaseManager.shared.viewContext, sectionNameKeyPath: #keyPath(ControllerSkin.name), cacheName: nil)

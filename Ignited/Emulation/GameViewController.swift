@@ -125,6 +125,10 @@ class GameViewController: DeltaCore.GameViewController
             }
         }
     }
+
+    override var liveSkinEnabled: Bool {
+        return Settings.proFeaturesEnabled
+    }
     
     //MARK: - Private Properties -
     private var pauseViewController: PauseViewController?
@@ -1133,6 +1137,12 @@ private extension GameViewController
         if Settings.localControllerPlayerIndex != nil
         {
             let controllerSkin = Settings.preferredControllerSkin(for: game, traits: traits)
+
+            if let controllerSkin = controllerSkin, controllerSkin.hasLiveSkin(for: traits), !Settings.proFeaturesEnabled
+            {
+                let text = NSLocalizedString("Buy Ignited Pro to enable LiveSkins", comment: "")
+                self.presentToastView(text: text)
+            }
             
             if let controllerSkin = controllerSkin,
                controllerSkin.isStandard
