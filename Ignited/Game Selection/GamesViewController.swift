@@ -445,6 +445,16 @@ extension GamesViewController: ImportControllerDelegate
         // .bin files (Genesis ROMs)
         documentTypes.insert("com.apple.macbinary-archive")
         
+        // Add Delta's exported UTIs in case user has Delta installed (which may override Ignited's UTI declarations)
+        documentTypes.insert("com.rileytestut.delta.game.gba")
+        documentTypes.insert("com.rileytestut.delta.game.gbc")
+        documentTypes.insert("com.rileytestut.delta.game.gb")
+
+        // Add public Game Boy ROM UTIs in case user has another app that declares them as Owner
+        documentTypes.insert("public.xgba-rom")
+        documentTypes.insert("public.xgbc-rom")
+        documentTypes.insert("public.xgb-rom")
+
         let itunesImportOption = iTunesImportOption(presentingViewController: self)
         
         let importController = ImportController(documentTypes: documentTypes)
